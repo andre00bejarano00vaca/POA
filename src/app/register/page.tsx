@@ -22,7 +22,6 @@ export default function LoginPage() {
     const router = useRouter();
     const { login, loading } = useAuth();
 
-
     const {
     register,
     handleSubmit,
