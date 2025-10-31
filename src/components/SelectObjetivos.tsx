@@ -16,7 +16,7 @@ interface SelectObjetivosProps {
   objetivosGestion?: ObjetivoGestion[];
 }
 
-const SelectObjetivos: React.FC<SelectObjetivosProps> = ({
+const SelectObjetivosRetro: React.FC<SelectObjetivosProps> = ({
   objetivosEstrategicos = [
     { id: "102.100", nombre: "Desarrollar capacidades tecnológicas" },
     { id: "103.200", nombre: "Fortalecer la investigación aplicada" },
@@ -33,14 +33,12 @@ const SelectObjetivos: React.FC<SelectObjetivosProps> = ({
   const [openGestion, setOpenGestion] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
-  // Filtra por id o nombre
   const filteredGestion = objetivosGestion.filter(
     (obj) =>
       obj.nombre.toLowerCase().includes(searchGestion.toLowerCase()) ||
       obj.id.toLowerCase().includes(searchGestion.toLowerCase())
   );
 
-  // Vincular objetivo estratégico automáticamente
   useEffect(() => {
     if (selectedGestion) {
       const prefix = selectedGestion.id.split(".").slice(0, 2).join(".");
@@ -49,7 +47,6 @@ const SelectObjetivos: React.FC<SelectObjetivosProps> = ({
     }
   }, [selectedGestion, objetivosEstrategicos]);
 
-  // Cierra el dropdown si se hace clic fuera
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -61,14 +58,15 @@ const SelectObjetivos: React.FC<SelectObjetivosProps> = ({
   }, []);
 
   return (
-    <div className="max-w-3xl mx-auto mt-10 p-8 bg-white text-black rounded-2xl shadow-xl space-y-8">
-      <h2 className="text-2xl font-bold text-center">PROGRAMA OPERATIVO ANUAL</h2>
+    <div className="w-full mx-auto bg-[#e0e0e0] border border-gray-400 rounded-md shadow-[inset_1px_1px_0_#fff,1px_1px_4px_#555] p-4 font-sans text-gray-900">
+      {/* Encabezado */}
+      <div className="bg-[#d0d0d0] border-b border-gray-400 px-3 py-2 mb-4 text-[13px] font-bold text-gray-800 shadow-[inset_1px_1px_0_#fff]">
+        PROGRAMA OPERATIVO ANUAL
+      </div>
 
       {/* Objetivo de Gestión */}
-      <div className="relative" ref={dropdownRef}>
-        <label className="block text-sm font-semibold mb-2 text-gray-800">
-          Objetivo de Gestión (ACP)
-        </label>
+      <div className="relative mb-3" ref={dropdownRef}>
+        <label className="block text-[13px] font-semibold mb-1">Objetivo de Gestión (ACP)</label>
 
         <input
           type="text"
@@ -76,17 +74,17 @@ const SelectObjetivos: React.FC<SelectObjetivosProps> = ({
           value={searchGestion}
           onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchGestion(e.target.value)}
           onFocus={() => setOpenGestion(true)}
-          className="w-full p-2.5 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="w-full border border-gray-500 rounded-sm bg-white text-[13px] px-2 py-1 shadow-[inset_1px_1px_2px_#aaa] focus:outline-none"
         />
 
         {openGestion && (
-          <ul className="absolute z-30 left-0 right-0 mt-2 max-h-52 overflow-y-auto bg-white rounded-md border border-gray-300 shadow-lg">
+          <ul className="absolute z-30 left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-white border border-gray-500 rounded-sm shadow-[1px_1px_3px_#555,inset_1px_1px_0_#fff] text-[13px]">
             {filteredGestion.length > 0 ? (
               filteredGestion.map((item) => (
                 <li
                   key={item.id}
-                  className={`p-2 cursor-pointer hover:bg-green-100 rounded ${
-                    selectedGestion?.id === item.id ? "bg-green-200" : ""
+                  className={`px-2 py-1 cursor-pointer hover:bg-[#bcd4f6] ${
+                    selectedGestion?.id === item.id ? "bg-[#a7c2f0]" : ""
                   }`}
                   onClick={() => {
                     setSelectedGestion(item);
@@ -94,22 +92,19 @@ const SelectObjetivos: React.FC<SelectObjetivosProps> = ({
                     setOpenGestion(false);
                   }}
                 >
-                  <span className="font-mono text-sm text-gray-700">{item.id}</span> —{" "}
-                  {item.nombre}
+                  <span className="font-mono">{item.id}</span> — {item.nombre}
                 </li>
               ))
             ) : (
-              <li className="p-2 text-gray-600">No se encontró resultado</li>
+              <li className="px-2 py-1 text-gray-600">No se encontró resultado</li>
             )}
           </ul>
         )}
       </div>
 
       {/* Objetivo Estratégico */}
-      <div>
-        <label className="block text-sm font-semibold mb-2 text-gray-800">
-          Objetivo Estratégico (automático)
-        </label>
+      <div className="mb-3">
+        <label className="block text-[13px] font-semibold mb-1">Objetivo Estratégico (automático)</label>
         <input
           type="text"
           value={
@@ -119,12 +114,12 @@ const SelectObjetivos: React.FC<SelectObjetivosProps> = ({
           }
           readOnly
           placeholder="Se llenará automáticamente al seleccionar un objetivo de gestión"
-          className="w-full p-2.5 rounded-md border border-gray-300 bg-gray-100 text-gray-800 cursor-not-allowed"
+          className="w-full border border-gray-500 rounded-sm bg-[#f0f0f0] text-[13px] px-2 py-1 text-gray-800 shadow-[inset_1px_1px_2px_#aaa]"
         />
       </div>
 
       {/* Resultados visibles */}
-      <div className="pt-4 border-t border-gray-300 text-sm space-y-1">
+      <div className="pt-2 border-t border-gray-400 text-[13px] space-y-1">
         <p>
           <span className="font-semibold">Gestión:</span>{" "}
           {selectedGestion ? `${selectedGestion.id} — ${selectedGestion.nombre}` : "—"}
@@ -134,14 +129,15 @@ const SelectObjetivos: React.FC<SelectObjetivosProps> = ({
           {selectedEstrategico ? `${selectedEstrategico.id} — ${selectedEstrategico.nombre}` : "—"}
         </p>
       </div>
-      <div className="pt-4 border-t border-gray-700 text-sm flex justify-center space-x-4">
-        <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition">
-          Registrar
+
+      {/* Botón */}
+      <div className="pt-3 border-t border-gray-400 flex justify-end">
+        <button className="bg-[#1c6dd0] hover:bg-[#155bb3] text-white font-semibold text-[13px] py-1.5 px-5 rounded-sm border border-gray-600 shadow-[1px_1px_0_#fff,inset_1px_1px_2px_#0004]">
+          REGISTRAR
         </button>
       </div>
-
     </div>
   );
 };
 
-export default SelectObjetivos;
+export default SelectObjetivosRetro;

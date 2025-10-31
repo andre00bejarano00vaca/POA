@@ -1,5 +1,6 @@
-"use client"
+"use client";
 import React, { useState, useRef, useEffect, ChangeEvent } from "react";
+import Link from "next/link";
 
 interface SelectDAUEProps {
   facultades?: string[];
@@ -22,18 +23,18 @@ const defaultCarreras = [
   "Carrera de Derecho",
 ];
 
-const SelectDAUE: React.FC<SelectDAUEProps> = ({
+const SelectDAUERetro: React.FC<SelectDAUEProps> = ({
   facultades = defaultFacultades,
   carreras = defaultCarreras,
   className = "",
 }) => {
-  const [searchDA, setSearchDA] = useState<string>("");
-  const [searchUE, setSearchUE] = useState<string>("");
-  const [selectedDA, setSelectedDA] = useState<string>("");
-  const [selectedUE, setSelectedUE] = useState<string>("");
+  const [searchDA, setSearchDA] = useState("");
+  const [searchUE, setSearchUE] = useState("");
+  const [selectedDA, setSelectedDA] = useState("");
+  const [selectedUE, setSelectedUE] = useState("");
 
-  const [openDA, setOpenDA] = useState<boolean>(false);
-  const [openUE, setOpenUE] = useState<boolean>(false);
+  const [openDA, setOpenDA] = useState(false);
+  const [openUE, setOpenUE] = useState(false);
 
   const wrapperDARef = useRef<HTMLDivElement | null>(null);
   const wrapperUERef = useRef<HTMLDivElement | null>(null);
@@ -47,23 +48,12 @@ const SelectDAUE: React.FC<SelectDAUEProps> = ({
     item.toLowerCase().includes(searchUE.toLowerCase())
   );
 
-  // Close dropdowns on outside click
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (
-        openDA &&
-        wrapperDARef.current &&
-        !wrapperDARef.current.contains(e.target as Node)
-      ) {
+      if (openDA && wrapperDARef.current && !wrapperDARef.current.contains(e.target as Node))
         setOpenDA(false);
-      }
-      if (
-        openUE &&
-        wrapperUERef.current &&
-        !wrapperUERef.current.contains(e.target as Node)
-      ) {
+      if (openUE && wrapperUERef.current && !wrapperUERef.current.contains(e.target as Node))
         setOpenUE(false);
-      }
     }
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape") {
@@ -104,133 +94,108 @@ const SelectDAUE: React.FC<SelectDAUEProps> = ({
   };
 
   return (
-    <div className={`max-w-md mx-auto mt-8 p-6 bg-white text-black rounded-2xl shadow-lg space-y-6 ${className}`}>
-      <h2 className="text-2xl font-bold text-center">Selección de Facultad y Carrera</h2>
+    <div
+      className={`max-w-xl mx-auto mt-10 bg-[#e0e0e0] border border-gray-500 rounded-md shadow-[inset_1px_1px_0_#fff,1px_1px_4px_#555] p-4 font-sans text-gray-900 ${className}`}
+    >
+      {/* Encabezado retro */}
+      <div className="bg-[#d0d0d0] border-b border-gray-400 px-3 py-2 mb-4 text-[13px] font-bold text-gray-800 shadow-[inset_1px_1px_0_#fff]">
+        SELECCIÓN DE FACULTAD Y CARRERA
+      </div>
 
-      {/* DA (Facultad) */}
-      <div ref={wrapperDARef} className="relative">
-        <label className="block text-sm font-semibold mb-2">DA (Facultad)</label>
-        <div
-          className="w-full"
-          onClick={() => {
-            setOpenDA(true);
-            inputDARef.current?.focus();
-          }}
-        >
-          <input
-            ref={inputDARef}
-            type="text"
-            placeholder="Buscar facultad..."
-            value={searchDA}
-            onChange={onDAInputChange}
-            onFocus={() => setOpenDA(true)}
-            aria-expanded={openDA}
-            aria-haspopup="listbox"
-            className="w-full p-2 rounded-md bg-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
+      {/* Facultad */}
+      <div ref={wrapperDARef} className="relative mb-4">
+        <label className="block text-[13px] font-semibold mb-1">DA (Facultad)</label>
+        <input
+          ref={inputDARef}
+          type="text"
+          placeholder="Buscar facultad..."
+          value={searchDA}
+          onChange={onDAInputChange}
+          onFocus={() => setOpenDA(true)}
+          className="w-full border border-gray-500 rounded-sm bg-white text-[13px] px-2 py-1 shadow-[inset_1px_1px_2px_#aaa] focus:outline-none"
+        />
 
-        {/* Dropdown */}
         {openDA && (
-          <ul
-            role="listbox"
-            aria-label="Facultades"
-            className="absolute z-30 left-0 right-0 mt-2 max-h-44 overflow-y-auto bg-white rounded-md border border-gray-700 shadow-lg"
-          >
+          <ul className="absolute z-30 left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-white border border-gray-500 rounded-sm shadow-[1px_1px_3px_#555,inset_1px_1px_0_#fff] text-[13px]">
             {filteredDA.length > 0 ? (
               filteredDA.map((item) => (
                 <li
                   key={item}
-                  role="option"
-                  aria-selected={selectedDA === item}
-                  tabIndex={0}
-                  className={`p-2 cursor-pointer hover:bg-blue-600 rounded`}
+                  className={`px-2 py-1 cursor-pointer hover:bg-[#bcd4f6] ${
+                    selectedDA === item ? "bg-[#a7c2f0]" : ""
+                  }`}
                   onClick={() => handleSelectDA(item)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleSelectDA(item);
-                  }}
                 >
                   {item}
                 </li>
               ))
             ) : (
-              <li className="p-2 text-gray-400">No se encontró</li>
+              <li className="px-2 py-1 text-gray-600">No se encontró</li>
             )}
           </ul>
         )}
       </div>
 
-      {/* UE (Carrera) */}
-      <div ref={wrapperUERef} className="relative">
-        <label className="block text-sm font-semibold mb-2">UE (Carrera)</label>
-        <div
-          className="w-full"
-          onClick={() => {
-            setOpenUE(true);
-            inputUERef.current?.focus();
-          }}
-        >
-          <input
-            ref={inputUERef}
-            type="text"
-            placeholder="Buscar carrera..."
-            value={searchUE}
-            onChange={onUEInputChange}
-            onFocus={() => setOpenUE(true)}
-            aria-expanded={openUE}
-            aria-haspopup="listbox"
-            className="w-full p-2 rounded-md bg-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
+      {/* Carrera */}
+      <div ref={wrapperUERef} className="relative mb-4">
+        <label className="block text-[13px] font-semibold mb-1">UE (Carrera)</label>
+        <input
+          ref={inputUERef}
+          type="text"
+          placeholder="Buscar carrera..."
+          value={searchUE}
+          onChange={onUEInputChange}
+          onFocus={() => setOpenUE(true)}
+          className="w-full border border-gray-500 rounded-sm bg-white text-[13px] px-2 py-1 shadow-[inset_1px_1px_2px_#aaa] focus:outline-none"
+        />
 
-        {/* Dropdown */}
         {openUE && (
-          <ul
-            role="listbox"
-            aria-label="Carreras"
-            className="absolute z-30 left-0 right-0 mt-2 max-h-44 overflow-y-auto bg-white rounded-md border border-gray-700 shadow-lg"
-          >
+          <ul className="absolute z-30 left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-white border border-gray-500 rounded-sm shadow-[1px_1px_3px_#555,inset_1px_1px_0_#fff] text-[13px]">
             {filteredUE.length > 0 ? (
               filteredUE.map((item) => (
                 <li
                   key={item}
-                  role="option"
-                  aria-selected={selectedUE === item}
-                  tabIndex={0}
-                  className={`p-2 cursor-pointer hover:bg-blue-600 rounded }`}
+                  className={`px-2 py-1 cursor-pointer hover:bg-[#bcd4f6] ${
+                    selectedUE === item ? "bg-[#a7c2f0]" : ""
+                  }`}
                   onClick={() => handleSelectUE(item)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleSelectUE(item);
-                  }}
                 >
                   {item}
                 </li>
               ))
             ) : (
-              <li className="p-2 text-gray-400">No se encontró</li>
+              <li className="px-2 py-1 text-gray-600">No se encontró</li>
             )}
           </ul>
         )}
       </div>
 
       {/* Resultados */}
-      <div className="pt-4 border-t border-gray-700 text-sm">
-        <p><span className="font-semibold">Facultad:</span> {selectedDA || "—"}</p>
-        <p><span className="font-semibold">Carrera:</span> {selectedUE || "—"}</p>
+      <div className="pt-2 border-t border-gray-400 text-[13px] space-y-1">
+        <p>
+          <span className="font-semibold">Facultad:</span> {selectedDA || "—"}
+        </p>
+        <p>
+          <span className="font-semibold">Carrera:</span> {selectedUE || "—"}
+        </p>
       </div>
+
       {/* Botones */}
-      <div className="pt-4 border-t border-gray-700 text-sm flex justify-center space-x-4">
-        <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition">
-          Ingreso
-        </button>
-        <button className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition">
-          Salir
+      <div className="pt-3 border-t border-gray-400 flex justify-end gap-3">
+        {(searchDA && searchUE)?  <button className="bg-[#1c6dd0] hover:bg-[#155bb3] text-white font-semibold text-[13px] py-1.5 px-5 rounded-sm border border-gray-600 shadow-[1px_1px_0_#fff,inset_1px_1px_2px_#0004]">
+          <Link href={'/Formulario'}>
+          INGRESO
+          </Link>
+        </button>: 
+        <button onClick={()=>{alert('rellana todos los datos')}} className="bg-[#B4B6D1] hover:bg-[#99B6D1] text-white font-semibold text-[13px] py-1.5 px-5 rounded-sm border border-gray-600 shadow-[1px_1px_0_#fff,inset_1px_1px_2px_#0004]">
+          INGRESO
+        </button>}
+        <button className="bg-[#d01c1c] hover:bg-[#b31515] text-white font-semibold text-[13px] py-1.5 px-5 rounded-sm border border-gray-600 shadow-[1px_1px_0_#fff,inset_1px_1px_2px_#0004]">
+          SALIR
         </button>
       </div>
-
-
     </div>
   );
 };
 
-export default SelectDAUE;
+export default SelectDAUERetro;
