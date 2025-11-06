@@ -11,6 +11,17 @@ const axiosInstance = axios.create({
     },
 });
 
+// Interceptor para agregar el token automáticamente a las peticiones
+axiosInstance.interceptors.request.use((config) => {
+    if (typeof window !== 'undefined') {
+        const token = localStorage.getItem('accessToken');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+    }
+    return config;
+});
+
 export const loginUser = async (payload: LoginPayload): Promise<LoginResponse> => {
     const query = `
         mutation {
@@ -33,4 +44,31 @@ export const loginUser = async (payload: LoginPayload): Promise<LoginResponse> =
         }
         throw error;
     }
+};
+
+// Funciones helper para acceder al token y usuario del localStorage
+export const getAccessToken = (): string | null => {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem('accessToken');
+};
+
+export const getUser = () => {
+    if (typeof window === 'undefined') return null;
+    const storage = localStorage.getItem('auth-storage');
+    if (storage) {
+        try {
+            const parsed = JSON.parse(storage);
+            return parsed.state?.user || null;
+        } catch {
+            return null;
+        }
+    }
+    return null;
+};
+
+export const logout = () => {
+    if (typeof window === 'undefined') return;
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('auth-storage');
+    localStorage.removeItem('user');
 };

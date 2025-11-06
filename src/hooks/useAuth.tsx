@@ -14,9 +14,24 @@ export const useAuth = () => {
         try {
             const response = await loginUser(payload);
             
-            // Save token in localStorage
-            if (response.accessToken) {
+            // Guardar token y datos del usuario en localStorage
+            if (response.accessToken && response.success) {
+                // Guardar accessToken por separado para fácil acceso
                 localStorage.setItem('accessToken', response.accessToken);
+                
+                // Guardar estructura completa que espera el Header (auth-storage)
+                const authData = {
+                    state: {
+                        user: {
+                            username: response.usuario.username,
+                            // Puedes agregar más campos del usuario aquí si los necesitas
+                        },
+                        token: response.accessToken,
+                    }
+                };
+                localStorage.setItem('auth-storage', JSON.stringify(authData));
+                
+                // También guardar usuario por separado para compatibilidad
                 localStorage.setItem('user', JSON.stringify(response.usuario));
             }
             

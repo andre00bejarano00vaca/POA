@@ -50,7 +50,7 @@ export default function LoginPage() {
       });
 
       if (result?.success) {
-        router.push("/dashboard");
+        router.push("/dashboard/reporte");
       } else {
         setError("root", { message: "Credenciales incorrectas o error de red." });
       }

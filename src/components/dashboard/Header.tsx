@@ -8,12 +8,13 @@ import { RiLogoutCircleRLine, RiChat1Fill } from "react-icons/ri";
 import { Menu, MenuItem, MenuButton } from "@szhsin/react-menu";
 
 interface User {
-  registro: number;
-  nombre: string;
-  correo: string;
-  telefono: number;
-  ci: number;
-  rol: string;
+  username: string;
+  nombre?: string;
+  correo?: string;
+  registro?: number;
+  telefono?: number;
+  ci?: number;
+  rol?: string;
 }
 
 const Header = () => {
@@ -70,7 +71,7 @@ const Header = () => {
                     <span className="text-xs text-gray-500">Hoy</span>
                   </div>
                   <p className="text-gray-500 text-xs">
-                    {user?.nombre || "Alguien"} ha comentado tu publicación.
+                    {user?.nombre || user?.username || "Alguien"} ha comentado tu publicación.
                   </p>
                 </div>
               </Link>
@@ -92,7 +93,7 @@ const Header = () => {
           menuButton={
             <MenuButton className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded-lg transition-colors">
               <span className="font-bold text-gray-700">
-                {user?.nombre?.split(" ")[0]?.toUpperCase() || "USUARIO"}
+                {user?.nombre?.split(" ")[0]?.toUpperCase() || user?.username?.toUpperCase() || "USUARIO"}
               </span>
               <FaAngleDown className="text-gray-600" />
             </MenuButton>
@@ -109,10 +110,10 @@ const Header = () => {
             >
               <div className="flex flex-col gap-1 text-sm">
                 <span className="font-semibold text-gray-700">
-                  {user?.nombre || "Nombre"}
+                  {user?.nombre || user?.username || "Nombre"}
                 </span>
                 <span className="text-xs text-gray-500">
-                  {user?.correo || "correo@ejemplo.com"}
+                  {user?.correo || user?.username || "correo@ejemplo.com"}
                 </span>
               </div>
             </Link>
