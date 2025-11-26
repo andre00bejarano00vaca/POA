@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import Image from "next/image";
 import { useAuth } from "@/hooks/useAuth";
+import Cookies from "js-cookie";
+
 // Change these lines - use string paths instead of imports
 const uagrm_logo = "/login/uagrm_logo.png";
 const logo_facebook = "/login/logo_facebook.png";
@@ -50,7 +52,11 @@ export default function LoginPage() {
       });
 
       if (result?.success) {
-        router.push("/dashboard/reporte");
+        
+        Cookies.set("user",data.correo);
+        Cookies.set("password",data.password);
+        router.push("/");
+
       } else {
         setError("root", { message: "Credenciales incorrectas o error de red." });
       }
@@ -144,7 +150,7 @@ export default function LoginPage() {
                   type="button"
                   disabled={loading}
                   className="font-mplus-bold bg-green-700 text-white py-2 px-4 rounded hover:bg-green-800 w-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                  onClick={() => router.push("/auth/register")}
+                  onClick={() => router.push("/register")}
                 >
                   Registrarse
                 </button>

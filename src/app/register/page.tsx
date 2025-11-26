@@ -49,7 +49,7 @@ export default function LoginPage() {
       });
 
       if (result?.success) {
-        router.push("/dashboard");
+        router.push("/");
       } else {
         setError("root", { message: "Credenciales incorrectas o error de red." });
       }

@@ -11,6 +11,8 @@
   "dependencies": {
     "@szhsin/react-menu": "^4.5.0",
     "axios": "^1.13.1",
+    "graphql-request": "^7.3.4",
+    "js-cookie": "^3.0.5",
     "lucide-react": "^0.548.0",
     "next": "^16.0.1",
     "react": "19.2.0",
@@ -21,6 +23,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/js-cookie": "^3.0.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

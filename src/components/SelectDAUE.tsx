@@ -23,7 +23,7 @@ const defaultCarreras = [
   "Carrera de Derecho",
 ];
 
-const SelectDAUERetro: React.FC<SelectDAUEProps> = ({
+const SelectDAUEModerno: React.FC<SelectDAUEProps> = ({
   facultades = defaultFacultades,
   carreras = defaultCarreras,
   className = "",
@@ -95,16 +95,23 @@ const SelectDAUERetro: React.FC<SelectDAUEProps> = ({
 
   return (
     <div
-      className={`max-w-xl mx-auto mt-10 bg-[#e0e0e0] border border-gray-500 rounded-md shadow-[inset_1px_1px_0_#fff,1px_1px_4px_#555] p-4 font-sans text-gray-900 ${className}`}
+      className={`max-w-lg mx-auto mt-10 bg-white border border-gray-200 rounded-xl shadow-lg p-6 font-sans text-gray-800 transition-all duration-300 hover:shadow-xl ${className}`}
     >
-      {/* Encabezado retro */}
-      <div className="bg-[#d0d0d0] border-b border-gray-400 px-3 py-2 mb-4 text-[13px] font-bold text-gray-800 shadow-[inset_1px_1px_0_#fff]">
-        SELECCIÓN DE FACULTAD Y CARRERA
+      {/* Encabezado moderno */}
+      <div className="text-center mb-6">
+        <h2 className="text-xl font-semibold text-gray-800">
+          Selección de Facultad y Carrera
+        </h2>
+        <p className="text-sm text-gray-500 mt-1">
+          Busca y selecciona una opción en cada campo
+        </p>
       </div>
 
       {/* Facultad */}
-      <div ref={wrapperDARef} className="relative mb-4">
-        <label className="block text-[13px] font-semibold mb-1">DA (Facultad)</label>
+      <div ref={wrapperDARef} className="relative mb-5">
+        <label className="block text-sm font-medium mb-1 text-gray-700">
+          Facultad
+        </label>
         <input
           ref={inputDARef}
           type="text"
@@ -112,17 +119,17 @@ const SelectDAUERetro: React.FC<SelectDAUEProps> = ({
           value={searchDA}
           onChange={onDAInputChange}
           onFocus={() => setOpenDA(true)}
-          className="w-full border border-gray-500 rounded-sm bg-white text-[13px] px-2 py-1 shadow-[inset_1px_1px_2px_#aaa] focus:outline-none"
+          className="w-full border border-gray-300 rounded-md bg-white text-sm px-3 py-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
         />
 
         {openDA && (
-          <ul className="absolute z-30 left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-white border border-gray-500 rounded-sm shadow-[1px_1px_3px_#555,inset_1px_1px_0_#fff] text-[13px]">
+          <ul className="absolute z-30 left-0 right-0 mt-2 max-h-48 overflow-y-auto bg-white border border-gray-200 rounded-md shadow-md text-sm animate-fadeIn">
             {filteredDA.length > 0 ? (
               filteredDA.map((item) => (
                 <li
                   key={item}
-                  className={`px-2 py-1 cursor-pointer hover:bg-[#bcd4f6] ${
-                    selectedDA === item ? "bg-[#a7c2f0]" : ""
+                  className={`px-3 py-2 cursor-pointer hover:bg-blue-50 ${
+                    selectedDA === item ? "bg-blue-100 font-medium" : ""
                   }`}
                   onClick={() => handleSelectDA(item)}
                 >
@@ -130,15 +137,17 @@ const SelectDAUERetro: React.FC<SelectDAUEProps> = ({
                 </li>
               ))
             ) : (
-              <li className="px-2 py-1 text-gray-600">No se encontró</li>
+              <li className="px-3 py-2 text-gray-500">No se encontró</li>
             )}
           </ul>
         )}
       </div>
 
       {/* Carrera */}
-      <div ref={wrapperUERef} className="relative mb-4">
-        <label className="block text-[13px] font-semibold mb-1">UE (Carrera)</label>
+      <div ref={wrapperUERef} className="relative mb-6">
+        <label className="block text-sm font-medium mb-1 text-gray-700">
+          Carrera
+        </label>
         <input
           ref={inputUERef}
           type="text"
@@ -146,17 +155,17 @@ const SelectDAUERetro: React.FC<SelectDAUEProps> = ({
           value={searchUE}
           onChange={onUEInputChange}
           onFocus={() => setOpenUE(true)}
-          className="w-full border border-gray-500 rounded-sm bg-white text-[13px] px-2 py-1 shadow-[inset_1px_1px_2px_#aaa] focus:outline-none"
+          className="w-full border border-gray-300 rounded-md bg-white text-sm px-3 py-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
         />
 
         {openUE && (
-          <ul className="absolute z-30 left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-white border border-gray-500 rounded-sm shadow-[1px_1px_3px_#555,inset_1px_1px_0_#fff] text-[13px]">
+          <ul className="absolute z-30 left-0 right-0 mt-2 max-h-48 overflow-y-auto bg-white border border-gray-200 rounded-md shadow-md text-sm animate-fadeIn">
             {filteredUE.length > 0 ? (
               filteredUE.map((item) => (
                 <li
                   key={item}
-                  className={`px-2 py-1 cursor-pointer hover:bg-[#bcd4f6] ${
-                    selectedUE === item ? "bg-[#a7c2f0]" : ""
+                  className={`px-3 py-2 cursor-pointer hover:bg-blue-50 ${
+                    selectedUE === item ? "bg-blue-100 font-medium" : ""
                   }`}
                   onClick={() => handleSelectUE(item)}
                 >
@@ -164,38 +173,46 @@ const SelectDAUERetro: React.FC<SelectDAUEProps> = ({
                 </li>
               ))
             ) : (
-              <li className="px-2 py-1 text-gray-600">No se encontró</li>
+              <li className="px-3 py-2 text-gray-500">No se encontró</li>
             )}
           </ul>
         )}
       </div>
 
       {/* Resultados */}
-      <div className="pt-2 border-t border-gray-400 text-[13px] space-y-1">
+      <div className="border-t border-gray-100 pt-4 text-sm text-gray-700 space-y-1">
         <p>
-          <span className="font-semibold">Facultad:</span> {selectedDA || "—"}
+          <span className="font-semibold">Facultad:</span>{" "}
+          {selectedDA || "—"}
         </p>
         <p>
-          <span className="font-semibold">Carrera:</span> {selectedUE || "—"}
+          <span className="font-semibold">Carrera:</span>{" "}
+          {selectedUE || "—"}
         </p>
       </div>
 
       {/* Botones */}
-      <div className="pt-3 border-t border-gray-400 flex justify-end gap-3">
-        {(searchDA && searchUE)?  <button className="bg-[#1c6dd0] hover:bg-[#155bb3] text-white font-semibold text-[13px] py-1.5 px-5 rounded-sm border border-gray-600 shadow-[1px_1px_0_#fff,inset_1px_1px_2px_#0004]">
-          <Link href={'/Formulario'}>
-          INGRESO
+      <div className="pt-5 flex justify-end gap-3">
+        {(searchDA && searchUE) ? (
+          <Link href="/Formulario">
+            <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm py-2 px-5 rounded-md shadow-sm transition-colors">
+              Ingreso
+            </button>
           </Link>
-        </button>: 
-        <button onClick={()=>{alert('rellana todos los datos')}} className="bg-[#B4B6D1] hover:bg-[#99B6D1] text-white font-semibold text-[13px] py-1.5 px-5 rounded-sm border border-gray-600 shadow-[1px_1px_0_#fff,inset_1px_1px_2px_#0004]">
-          INGRESO
-        </button>}
-        <button className="bg-[#d01c1c] hover:bg-[#b31515] text-white font-semibold text-[13px] py-1.5 px-5 rounded-sm border border-gray-600 shadow-[1px_1px_0_#fff,inset_1px_1px_2px_#0004]">
-          SALIR
+        ) : (
+          <button
+            onClick={() => alert("Rellena todos los datos")}
+            className="bg-gray-400 hover:bg-gray-500 text-white font-medium text-sm py-2 px-5 rounded-md shadow-sm transition-colors"
+          >
+            Ingreso
+          </button>
+        )}
+        <button className="bg-red-500 hover:bg-red-600 text-white font-medium text-sm py-2 px-5 rounded-md shadow-sm transition-colors">
+          Salir
         </button>
       </div>
     </div>
   );
 };
 
-export default SelectDAUERetro;
+export default SelectDAUEModerno;
