@@ -5,6 +5,7 @@ import FormIndicadorPEI from "@/components/FormIndicadorPEI";
 import FormMatrizPEI from "@/components/FormMatrizPEI";
 import FormProgramaAnualMeta from "@/components/FormProgramaAnualMeta";
 import PEIListGeneric from "@/components/listas/pei/PEIListGeneric";
+import Matrizpi from "@/components/Matriz/Matrizpi";
 import ObjetivoEstrategicoAMPForm from "@/components/ObjetivoEstrategicoAMPForm";
 import PEIForm from "@/components/PeiForm";
 import ActividadForm from "@/components/poa/ActividadForm";
@@ -26,6 +27,19 @@ import ProductoInstitucionalForm from "@/components/ProductoInstitucionalForm";
 import SelectDAUE from "@/components/SelectDAUE";
 import SelectObjetivos from "@/components/SelectObjetivos";
 import Image from "next/image";
+const data = [
+  {
+    areaEstrategica: "Desarrollo Social",
+    politicaDesarrollo: "Mejorar la calidad de vida",
+    objetivoEstrategico: "Reducir brechas sociales",
+    productoInstitucional: "Capacitaciones",
+    accionEstrategica: "Talleres comunitarios",
+    indicadoresPEI: "Número de beneficiarios",
+    programacionAnualMetas: "500 personas/año",
+    programacion: "Enero - Diciembre",
+    unidadesInvolucradas: "Unidad Social, RRHH",
+  },
+];
 
 export default function Home() {
   const indicadores = [
@@ -41,7 +55,7 @@ export default function Home() {
   return (
     <div className="flex min-h-screen bg-black font-sans">
       <main className="flex min-h-screen w-full  bg-white sm:items-start">
-        <PEIListGeneric/>
+        <Matrizpi />
       </main>
     </div>
   );
