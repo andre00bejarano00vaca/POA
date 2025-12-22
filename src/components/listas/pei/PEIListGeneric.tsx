@@ -1,5 +1,5 @@
 import GenericList from "../GenericList";
-import PEIForm from "@/components/PeiForm";
+import PEIForm from "@/components/pei/PeiForm";
 export default function PEIList() {
   const datos = [
     {

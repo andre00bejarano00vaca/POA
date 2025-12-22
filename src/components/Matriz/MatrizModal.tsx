@@ -1,4 +1,3 @@
-// MatrizModal.tsx (Presentational - Diseño Ejecutivo Horizontal y Ampliado)
 
 import React from 'react';
 import { Header, RowData } from './Matrizpi'; 
@@ -56,11 +55,9 @@ const MatrizModal: React.FC<MatrizModalProps> = ({
     
     return (
         <div className="fixed inset-0 backdrop-blur-xs bg-opacity-80 flex justify-center items-center p-4 z-50 backdrop-blur-sm">
-            {/* 🎯 CAMBIO CLAVE: Ampliamos a max-w-7xl para usar más espacio horizontal 
-                También usamos mx-auto para centrarlo y dejamos un margen horizontal (p-4 en el div padre) */}
+
             <div className="bg-white p-6 w-full max-w-7xl rounded-lg shadow-2xl transform transition-all duration-300 scale-100">
                 
-                {/* ➡️ Encabezado Ejecutivo */}
                 <div className="flex justify-between items-center border-b border-gray-200 pb-3 mb-4">
                     <h3 className="text-xl font-bold text-gray-800">
                         {editIndex !== null ? "📝 Edición de Registro PEI" : "➕ Nuevo Registro PEI"}
@@ -70,7 +67,6 @@ const MatrizModal: React.FC<MatrizModalProps> = ({
                     </button>
                 </div>
                 
-                {/* ➡️ Contenedor de la Matriz de Entrada Horizontal */}
                 <div className="overflow-x-auto max-h-[70vh]">
                     <table className="min-w-max text-sm border-collapse">
                         
@@ -81,7 +77,6 @@ const MatrizModal: React.FC<MatrizModalProps> = ({
                                     <th 
                                         key={h.key} 
                                         className={`${h.color} p-3 font-semibold text-gray-800 border-r border-gray-300 whitespace-nowrap text-left min-w-[220px] shadow-sm`}
-                                        // Aumentamos el min-w a 220px para darle un poco más de aire a cada columna
                                     >
                                         {h.label}
                                     </th>

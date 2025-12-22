@@ -212,7 +212,6 @@ const BecaEstudioForm = () => {
             onChange={(e) => handleSearchChange(e.target.value, setSearchFuente, setSelectedFuente, setOpenFuente)}
             onFocus={() => setOpenFuente(true)}
             placeholder="Buscar fuente..."
-            // Cambiamos el borde a rojo si hay texto pero no hay selección
             className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${
                searchFuente && !selectedFuente ? 'border-red-300 focus:ring-red-200' : 'border-gray-300 focus:ring-blue-500'
             }`}

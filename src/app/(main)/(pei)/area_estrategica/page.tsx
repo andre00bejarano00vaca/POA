@@ -1,9 +1,9 @@
-import FormMatrizPEI from '@/components/FormMatrizPEI'
+import AREAForm from '@/components/pei/AREAForm'
 import React from 'react'
 
 const page = () => {
   return (
-    <FormMatrizPEI/>
+    <AREAForm/>
   )
 }
 

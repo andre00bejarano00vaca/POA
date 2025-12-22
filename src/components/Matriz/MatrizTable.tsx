@@ -1,8 +1,7 @@
-// MatrizTable.tsx (Presentational)
 
 import React from 'react';
 import { Edit, Trash2 } from 'lucide-react'; 
-import { Header, RowData } from './Matrizpi'; // Importa las interfaces del Contenedor
+import { Header, RowData } from './Matrizpi'; 
 
 interface MatrizTableProps {
     headers: Header[];

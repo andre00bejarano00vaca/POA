@@ -1,13 +1,13 @@
-import AREAForm from "@/components/AREAForm";
-import DetalleForm from "@/components/DetalleForm";
-import FormAccionEstrategica from "@/components/FormAccionEstrategica";
-import FormIndicadorPEI from "@/components/FormIndicadorPEI";
-import FormMatrizPEI from "@/components/FormMatrizPEI";
-import FormProgramaAnualMeta from "@/components/FormProgramaAnualMeta";
+import AREAForm from "@/components/pei/AREAForm";
+import DetalleForm from "@/components/pei/DetalleForm";
+import FormAccionEstrategica from "@/components/pei/FormAccionEstrategica";
+import FormIndicadorPEI from "@/components/pei/FormIndicadorPEI";
+import FormMatrizPEI from "@/components/pei/FormMatrizPEI";
+import FormProgramaAnualMeta from "@/components/pei/FormProgramaAnualMeta";
 import PEIListGeneric from "@/components/listas/pei/PEIListGeneric";
 import Matrizpi from "@/components/Matriz/Matrizpi";
-import ObjetivoEstrategicoAMPForm from "@/components/ObjetivoEstrategicoAMPForm";
-import PEIForm from "@/components/PeiForm";
+import ObjetivoEstrategicoAMPForm from "@/components/pei/ObjetivoEstrategicoAMPForm";
+import PEIForm from "@/components/pei/PeiForm";
 import ActividadForm from "@/components/poa/ActividadForm";
 import BecaEstudioForm from "@/components/poa/BecaEstudioForm";
 import FormBecaEstudio from "@/components/poa/FormBecaEstudio";
@@ -22,10 +22,10 @@ import PresupuestoForm from "@/components/poa/PresupuestoForm";
 import ProductoForm from "@/components/poa/ProductoForm";
 import ProgramacionTrimestralMetaForm from "@/components/poa/ProgramacionTrimestralMetaForm";
 import ProgramaPOAForm from "@/components/poa/ProgramaPOAForm";
-import PoliticaForm from "@/components/PoliticaForm";
-import ProductoInstitucionalForm from "@/components/ProductoInstitucionalForm";
-import SelectDAUE from "@/components/SelectDAUE";
-import SelectObjetivos from "@/components/SelectObjetivos";
+import PoliticaForm from "@/components/pei/PoliticaForm";
+import ProductoInstitucionalForm from "@/components/pei/ProductoInstitucionalForm";
+import SelectDAUE from "@/components/pei/SelectDAUE";
+import SelectObjetivos from "@/components/pei/SelectObjetivos";
 import Image from "next/image";
 const data = [
   {
@@ -42,14 +42,6 @@ const data = [
 ];
 
 export default function Home() {
-  const indicadores = [
-  { "id": 10, "descripcion": "Número de beneficiarios atendidos" },
-  { "id": 11, "descripcion": "Porcentaje de cumplimiento" }
-];
-  const actividades =  [
-  { "id": 1, "descripcion": "Taller de capacitación" },
-  { "id": 2, "descripcion": "Campaña educativa" }
-]
 
 
   return (

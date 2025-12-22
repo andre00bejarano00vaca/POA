@@ -89,7 +89,7 @@ export default function Matrizpi() {
       
       {/* Encabezado y Botones */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 bg-white p-4 rounded-xl shadow-lg border">
-        <h2 className="text-3xl font-extrabold text-gray-800 mb-3 md:mb-0">📊 Gestión PEI: Matriz de Planificación</h2>
+        <h2 className="text-3xl font-extrabold text-gray-800 mb-3 md:mb-0">Gestión PEI: Matriz de Planificación</h2>
         <div className="flex gap-3">
           <button 
             className={`${baseButtonClass} bg-green-600 text-white hover:bg-green-700`} 

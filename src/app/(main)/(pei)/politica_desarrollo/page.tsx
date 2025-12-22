@@ -1,9 +1,9 @@
-import FormIndicadorPEI from '@/components/FormIndicadorPEI'
+import PoliticaForm from '@/components/pei/PoliticaForm'
 import React from 'react'
 
 const page = () => {
   return (
-    <FormIndicadorPEI/>
+    <PoliticaForm/>
   )
 }
 

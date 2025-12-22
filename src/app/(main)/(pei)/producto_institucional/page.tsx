@@ -1,4 +1,4 @@
-import ProductoInstitucionalForm from '@/components/ProductoInstitucionalForm'
+import ProductoInstitucionalForm from '@/components/pei/ProductoInstitucionalForm'
 import React from 'react'
 
 const page = () => {

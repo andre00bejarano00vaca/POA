@@ -1,4 +1,4 @@
-import ObjetivoEstrategicoAMPForm from '@/components/ObjetivoEstrategicoAMPForm'
+import ObjetivoEstrategicoAMPForm from '@/components/pei/ObjetivoEstrategicoAMPForm'
 import React from 'react'
 
 const page = () => {

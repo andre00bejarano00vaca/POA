@@ -1,8 +1,8 @@
-import DetalleFormRetro from '@/components/DetalleForm'
-import SelectDAUERetro from '@/components/SelectDAUE'
-import SelectObjetivosRetro from '@/components/SelectObjetivos'
+import DetalleFormRetro from '@/components/pei/DetalleForm'
+import SelectDAUERetro from '@/components/pei/SelectDAUE'
+import SelectObjetivosRetro from '@/components/pei/SelectObjetivos'
 import React from 'react'
-import DetalleTablaRetro from "@/components/DetalleTablaRetro";
+import DetalleTablaRetro from "@/components/pei/DetalleTablaRetro";
 
 const dataEjemplo = [
   {
