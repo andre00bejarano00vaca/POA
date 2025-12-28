@@ -20,7 +20,7 @@ export const ProductoInstitucionalService = {
     return fetchGraphQL<any>(mutation, { idPi, description, accionEstrategicaId });
   },
 
-  /** Actualiza la descripción de un producto institucional existente [cite: 31] */
+  /** Actualiza la descripción de un producto institucional existente */
   update: async (id: number, description: string) => {
     const mutation = `
       mutation UpdateProducto($id: ID!, $description: String!) {
@@ -33,7 +33,7 @@ export const ProductoInstitucionalService = {
     return fetchGraphQL<any>(mutation, { id, description });
   },
 
-  /** Elimina un producto institucional por su ID interno [cite: 31] */
+  /** Elimina un producto institucional por su ID interno */
   delete: async (id: number) => {
     const mutation = `
       mutation DeleteProducto($id: ID!) {
@@ -48,7 +48,7 @@ export const ProductoInstitucionalService = {
 
   // --- QUERIES ---
 
-  /** Obtiene un producto institucional por su ID interno [cite: 32] */
+  /** Obtiene un producto institucional por su ID interno  */
   getById: async (id: number) => {
     const query = `
       query GetProducto($id: ID!) {
@@ -61,7 +61,7 @@ export const ProductoInstitucionalService = {
     return fetchGraphQL<any>(query, { id });
   },
 
-  /** Lista los productos institucionales con soporte para paginación [cite: 33] */
+  /** Lista los productos institucionales con soporte para paginación  */
   list: async (limit = 100, offset = 0) => {
     const query = `
       query ListProductos($limit: Int, $offset: Int) {
@@ -73,7 +73,7 @@ export const ProductoInstitucionalService = {
     return fetchGraphQL<any>(query, { limit, offset });
   },
 
-  /** Busca productos por coincidencia de texto en la descripción [cite: 34] */
+  /** Busca productos por coincidencia de texto en la descripción  */
   search: async (text: string, limit = 50) => {
     const query = `
       query SearchProductos($search: String!, $limit: Int) {
@@ -110,7 +110,7 @@ export const ProductoInstitucionalService = {
     return fetchGraphQL<any>(query, { idPi });
   },
 
-  /** Obtiene la lista ordenada (ej: "-id", "id_pi" o "description") [cite: 36, 37] */
+  /** Obtiene la lista ordenada (ej: "-id", "id_pi" o "description")  */
   getOrdered: async (orderBy: string, limit = 100) => {
     const query = `
       query GetOrdered($orderBy: String, $limit: Int) {
@@ -122,7 +122,7 @@ export const ProductoInstitucionalService = {
     return fetchGraphQL<any>(query, { orderBy, limit });
   },
 
-  /** Utilidades para contar y verificar existencia [cite: 35, 36] */
+  /** Utilidades para contar y verificar existencia*/
   utils: {
     count: () => fetchGraphQL<any>(`query { countProductosInstitucion }`),
     exists: (id: number) => fetchGraphQL<any>(`query Exists($id: ID!) { existsProductoInstitucion(id: $id) }`, { id })

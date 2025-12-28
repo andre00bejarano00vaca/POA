@@ -1,13 +1,10 @@
-// Matrizpi.tsx (Container)
 
 "use client";
 import React, { useState } from "react";
 import { Plus, FileText } from 'lucide-react'; 
-// Importamos los nuevos componentes presentacionales
 import MatrizTable from './MatrizTable';
 import MatrizModal from './MatrizModal';
 
-// --- Definiciones Compartidas (Mover a un archivo types.ts si el proyecto crece) ---
 export interface Header {
   key: string;
   label: string;
@@ -108,7 +105,7 @@ export default function Matrizpi() {
         </div>
       </div>
 
-      {/* 🟢 Renderizado del Componente de Presentación (Tabla) */}
+      {/*  Renderizado del Componente de Presentación (Tabla) */}
       <MatrizTable 
         headers={headers}
         data={data}
@@ -116,7 +113,7 @@ export default function Matrizpi() {
         handleDelete={handleDelete}
       />
 
-      {/* 🟢 Renderizado del Componente de Presentación (Modal) */}
+      {/* Renderizado del Componente de Presentación (Modal) */}
       {modalOpen && (
         <MatrizModal
             modalOpen={modalOpen}

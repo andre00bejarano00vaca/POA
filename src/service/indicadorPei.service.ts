@@ -3,22 +3,22 @@ import { fetchGraphQL } from '@/lib/graphql-client';
 export const IndicadorPeiService = {
   // --- MUTATIONS ---
 
-  /** Crea un nuevo indicador PEI vinculado a un objetivo estratégico */
-  create: async (
-    description: string, 
-    unidadMedida: string, 
-    formula: string, 
-    lineaBase: number, 
-    meta: number, 
-    objetivoEstrategicoId: number
-  ) => {
+  /** Crea un nuevo indicador asociado a un objetivo estratégico */
+  create: async (variables: {
+    description: string;
+    unidadMedida: string;
+    formula: string;
+    lineaBase: number;
+    meta: number;
+    objetivoEstrategicoId: number;
+  }) => {
     const mutation = `
-      mutation CreateIndicador($description: String!, $uMedida: String!, $formula: String!, $lBase: Float!, $meta: Float!, $objId: Int!) {
+      mutation CreateIndicador($desc: String!, $um: String!, $form: String!, $lb: Float!, $meta: Float!, $objId: Int!) {
         createIndicadorPei(
-          description: $description
-          unidadMedida: $uMedida
-          formula: $formula
-          lineaBase: $lBase
+          description: $desc
+          unidadMedida: $um
+          formula: $form
+          lineaBase: $lb
           meta: $meta
           objetivoEstrategicoId: $objId
         ) {
@@ -28,45 +28,38 @@ export const IndicadorPeiService = {
             id
             description
             unidadMedida
-            formula
-            lineaBase
             meta
-            objetivoEstrategico { id description }
           }
         }
       }`;
-    return fetchGraphQL<any>(mutation, { 
-      description, 
-      uMedida: unidadMedida, 
-      formula, 
-      lBase: lineaBase, 
-      meta, 
-      objId: objetivoEstrategicoId 
+    return fetchGraphQL<any>(mutation, {
+      desc: variables.description,
+      um: variables.unidadMedida,
+      form: variables.formula,
+      lb: variables.lineaBase,
+      meta: variables.meta,
+      objId: variables.objetivoEstrategicoId
     });
   },
 
-  /** Actualiza la descripción o la meta de un indicador existente */
+  /** Actualiza los datos de un indicador existente */
   update: async (id: number, description: string, meta: number) => {
     const mutation = `
-      mutation UpdateIndicador($id: ID!, $description: String!, $meta: Float!) {
-        updateIndicadorPei(id: $id, description: $description, meta: $meta) {
+      mutation UpdateIndicador($id: ID!, $desc: String!, $meta: Float!) {
+        updateIndicadorPei(id: $id, description: $desc, meta: $meta) {
           success
           message
           data {
             id
             description
-            unidadMedida
-            formula
-            lineaBase
             meta
-            objetivoEstrategico { id description }
           }
         }
       }`;
-    return fetchGraphQL<any>(mutation, { id, description, meta });
+    return fetchGraphQL<any>(mutation, { id, desc: description, meta });
   },
 
-  /** Elimina un indicador PEI por su ID */
+  /** Elimina un indicador por su ID */
   delete: async (id: number) => {
     const mutation = `
       mutation DeleteIndicador($id: ID!) {
@@ -81,7 +74,7 @@ export const IndicadorPeiService = {
 
   // --- QUERIES ---
 
-  /** Obtiene un indicador por su ID con el detalle de su objetivo estratégico */
+  /** Obtiene el detalle de un indicador específico */
   getById: async (id: number) => {
     const query = `
       query GetIndicador($id: ID!) {
@@ -95,14 +88,17 @@ export const IndicadorPeiService = {
             formula
             lineaBase
             meta
-            objetivoEstrategico { id description }
+            objetivoEstrategico {
+              id
+              description
+            }
           }
         }
       }`;
     return fetchGraphQL<any>(query, { id });
   },
 
-  /** Lista indicadores con soporte para paginación */
+  /** Lista todos los indicadores con soporte para paginación */
   list: async (limit = 100, offset = 0) => {
     const query = `
       query ListIndicadores($limit: Int, $offset: Int) {
@@ -112,18 +108,31 @@ export const IndicadorPeiService = {
             id
             description
             unidadMedida
-            formula
-            lineaBase
             meta
-            objetivoEstrategico { id description }
           }
         }
       }`;
     return fetchGraphQL<any>(query, { limit, offset });
   },
 
-  /** Filtra indicadores por un objetivo estratégico específico */
-  filterByObjetivo: async (objetivoEstrategicoId: number, limit = 100) => {
+  /** Busca indicadores por descripción (ej: "Tasa de egreso") */
+  search: async (text: string, limit = 50) => {
+    const query = `
+      query SearchIndicadores($search: String!, $limit: Int) {
+        searchIndicadoresPei(search: $search, limit: $limit) {
+          count
+          results {
+            id
+            description
+            meta
+          }
+        }
+      }`;
+    return fetchGraphQL<any>(query, { search: text, limit });
+  },
+
+  /** Filtra indicadores por un Objetivo Estratégico específico */
+  filterByObjetivo: async (objetivoId: number, limit = 100) => {
     const query = `
       query FilterByObj($objId: Int!, $limit: Int) {
         filterIndicadoresPorObjetivo(objetivoEstrategicoId: $objId, limit: $limit) {
@@ -132,53 +141,10 @@ export const IndicadorPeiService = {
             id
             description
             unidadMedida
-            lineaBase
             meta
-            objetivoEstrategico { id description }
           }
         }
       }`;
-    return fetchGraphQL<any>(query, { objId: objetivoEstrategicoId, limit });
-  },
-
-  /** Filtra indicadores por un rango de meta (mínimo y máximo) */
-  filterByRange: async (metaMin: number, metaMax: number, limit = 100) => {
-    const query = `
-      query FilterByRange($min: Float!, $max: Float!, $limit: Int) {
-        filterIndicadoresPorRangoMeta(metaMin: $min, metaMax: $max, limit: $limit) {
-          count
-          results {
-            id
-            description
-            meta
-            lineaBase
-            objetivoEstrategico { id description }
-          }
-        }
-      }`;
-    return fetchGraphQL<any>(query, { min: metaMin, max: metaMax, limit });
-  },
-
-  /** Obtiene la lista ordenada (ej: "-meta", "description") */
-  getOrdered: async (orderBy: string, limit = 100) => {
-    const query = `
-      query GetOrdered($orderBy: String, $limit: Int) {
-        getIndicadoresPeiOrdenados(orderBy: $orderBy, limit: $limit) {
-          count
-          results {
-            id
-            description
-            meta
-            objetivoEstrategico { id description }
-          }
-        }
-      }`;
-    return fetchGraphQL<any>(query, { orderBy, limit });
-  },
-
-  /** Utilidades para conteo y existencia */
-  utils: {
-    count: () => fetchGraphQL<any>(`query { countIndicadoresPei }`),
-    exists: (id: number) => fetchGraphQL<any>(`query Exists($id: ID!) { existsIndicadorPei(id: $id) }`, { id })
+    return fetchGraphQL<any>(query, { objId: objetivoId, limit });
   }
 };
