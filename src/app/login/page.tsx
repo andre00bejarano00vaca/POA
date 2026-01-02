@@ -15,7 +15,7 @@ const imgenFondo = "/login/fondo-imagen-uagrm.png";
 
 
 type LoginForm = {
-  correo: string;
+  username: string;
   password: string;
 };
 
@@ -46,14 +46,14 @@ export default function LoginPage() {
       const ip = await getClientIP();
 
       const result = await login({
-        username: data.correo,
+        username: data.username,
         password: data.password,
         ip,
       });
 
       if (result?.success) {
         
-        Cookies.set("user",data.correo);
+        Cookies.set("user", data.username);
         Cookies.set("password",data.password);
         router.push("/");
 
@@ -100,20 +100,16 @@ export default function LoginPage() {
             <form onSubmit={handleSubmit(onSubmit)} className="mt-3 mx-auto">
               <div className="mb-2">
                 <input
-                  type="email"
-                  placeholder="Ingrese su correo"
+                  type="text"
+                  placeholder="Ingrese su nombre de usuario"
                   disabled={loading}
-                  {...register("correo", {
-                    required: "El correo es obligatorio",
-                    pattern: {
-                      value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                      message: "Ingrese un correo válido",
-                    },
+                  {... register("username", {
+                    required: "El nombre de usuario es obligatorio",
                   })}
                   className="font-mplus-bold text-gray-500 rounded-xl w-full p-2 mt-10 bg-white outline-none disabled:opacity-50"
                 />
-                {errors.correo && (
-                  <p className="text-red-500 text-sm">{errors.correo.message}</p>
+                { errors.username && (
+                  <p className="text-red-500 text-sm">{errors.username.message}</p>
                 )}
               </div>
 
