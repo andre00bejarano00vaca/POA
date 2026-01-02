@@ -7,6 +7,7 @@ export interface LoginResponse {
   message: string;
   usuario: Usuario;
   accessToken: string;
+  refreshToken: string; // AGREGADO
 }
 
 export interface GraphQLLoginResponse {

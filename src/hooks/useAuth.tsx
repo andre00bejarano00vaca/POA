@@ -15,10 +15,10 @@ export const useAuth = () => {
             const response = await loginUser(payload);
             
             // Guardar token y datos del usuario en localStorage
-            if (response.accessToken && response.success) {
+            if (response.accessToken && response.refreshToken && response.success) {
                 // Guardar accessToken por separado para fácil acceso
                 localStorage.setItem('accessToken', response.accessToken);
-                
+                localStorage.setItem('refreshToken', response.refreshToken);
                 // Guardar estructura completa que espera el Header (auth-storage)
                 const authData = {
                     state: {

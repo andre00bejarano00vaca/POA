@@ -4,6 +4,8 @@ import "./globals.css";
 import "@szhsin/react-menu/dist/index.css";
 import "@szhsin/react-menu/dist/transitions/slide.css";
 
+import { TokenRefresher } from "@/components/common/TokenRefresher";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -34,6 +36,7 @@ export default function RootLayout({
       <body
         className={`bg-gray-100 ${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <TokenRefresher />
         {children}
       </body>
     </html>
