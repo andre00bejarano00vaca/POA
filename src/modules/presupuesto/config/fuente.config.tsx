@@ -8,11 +8,11 @@ import type { Fuente } from "@/modules/presupuesto/types/fuente.types";
  * Configuración de columnas para la tabla de Fuentes
  */
 export const fuenteColumns: ColumnConfig<Fuente>[] = [
-  {
-    key: "id",
-    header: "ID",
-    className: "text-center w-20",
-  },
+  // {
+  //   key: "id",
+  //   header: "ID",
+  //   className: "text-center w-20",
+  // },
   {
     key: "codigo",
     header: "Código",

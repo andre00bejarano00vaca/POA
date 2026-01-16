@@ -183,13 +183,274 @@
 
 // src/modules/pei/services/politicaDesarrollo.service.ts
 
+// import { fetchGraphQL } from "@/shared/lib/graphql-client";
+// import { createServiceErrorHandler } from "@/shared/lib/service-errors";
+// import {
+//   normalizeEntity,
+//   normalizeRelation,
+//   passthrough,
+// } from "@/shared/lib/normalizers";
+// import type {
+//   PoliticaDesarrollo,
+//   CreatePoliticaDesarrolloInput,
+//   UpdatePoliticaDesarrolloInput,
+// } from "@/modules/pei/types/politicaDesarrollo.types";
+
+// import {
+//   LIST_POLITICAS_DESARROLLO,
+//   SEARCH_POLITICAS_DESARROLLO,
+//   GET_POLITICA_DESARROLLO,
+//   FILTER_POLITICAS_POR_AREA,
+// } from "@/graphql/pei/queries/politicaDesarrollo.queries";
+
+// import {
+//   CREATE_POLITICA_DESARROLLO,
+//   UPDATE_POLITICA_DESARROLLO,
+//   DELETE_POLITICA_DESARROLLO,
+// } from "@/graphql/pei/mutations/politicaDesarrollo.mutations";
+
+// // TYPES
+// interface MutationResponse<T> {
+//   success: boolean;
+//   message: string;
+//   data: T | null;
+// }
+
+// interface ListResponse<T> {
+//   count: number;
+//   results: T[];
+// }
+
+// interface PaginationParams {
+//   limit?: number;
+//   offset?: number;
+// }
+// // ERROR HANDLER
+// const handleError = createServiceErrorHandler("PoliticaDesarrolloService");
+
+// // NORMALIZER (usando helper reutilizable)
+// const normalizarPoliticaDesarrollo = (politica: any): PoliticaDesarrollo =>
+//   normalizeEntity<any, PoliticaDesarrollo>(politica, {
+//     id: passthrough,
+//     idPd: passthrough,
+//     description: passthrough,
+//     areaEstrategica: normalizeRelation, // ✅ Helper reutilizable
+//   });
+
+// // SERVICE
+// export const PoliticaDesarrolloService = {
+//   /**
+//    * Lista todas las políticas de desarrollo sin filtros o con búsqueda por texto
+//    */
+//   listAll: async (
+//     limit: number = 10,
+//     offset: number = 0,
+//     search?: string
+//   ): Promise<{ results: PoliticaDesarrollo[]; count: number }> => {
+//     try {
+//       // Si hay búsqueda, usar searchByText
+//       if (search && search.trim()) {
+//         return PoliticaDesarrolloService.searchByText(search.trim(), {
+//           limit,
+//           offset,
+//         });
+//       }
+
+//       // Sin búsqueda, listar normalmente
+//       const response = await fetchGraphQL<{
+//         listPoliticasDesarrollo: ListResponse<any>;
+//       }>(LIST_POLITICAS_DESARROLLO, { limit, offset });
+
+//       const results = response.listPoliticasDesarrollo.results.map(
+//         normalizarPoliticaDesarrollo
+//       );
+
+//       return {
+//         results,
+//         count: response.listPoliticasDesarrollo.count,
+//       };
+//     } catch (error) {
+//       return handleError("listAll", error);
+//     }
+//   },
+
+//   /**
+//    * Busca políticas de desarrollo por texto en descripción
+//    */
+//   searchByText: async (
+//     searchTerm: string,
+//     { limit = 10, offset = 0 }: PaginationParams = {}
+//   ): Promise<{ results: PoliticaDesarrollo[]; count: number }> => {
+//     try {
+//       const response = await fetchGraphQL<{
+//         searchPoliticasDesarrollo: ListResponse<any>;
+//       }>(SEARCH_POLITICAS_DESARROLLO, {
+//         search: searchTerm,
+//         limit,
+//         offset,
+//       });
+
+//       const results = response.searchPoliticasDesarrollo.results.map(
+//         normalizarPoliticaDesarrollo
+//       );
+
+//       return {
+//         results,
+//         count: response.searchPoliticasDesarrollo.count,
+//       };
+//     } catch (error) {
+//       return handleError("searchByText", error);
+//     }
+//   },
+
+//   /**
+//    * Filtra políticas por área estratégica específica
+//    */
+//   filterByArea: async (
+//     areaEstrategicaId: number,
+//     { limit = 10, offset = 0 }: PaginationParams = {}
+//   ): Promise<{ results: PoliticaDesarrollo[]; count: number }> => {
+//     try {
+//       const response = await fetchGraphQL<{
+//         filterPoliticasPorArea: ListResponse<any>;
+//       }>(FILTER_POLITICAS_POR_AREA, { areaEstrategicaId, limit, offset });
+
+//       const results = response.filterPoliticasPorArea.results.map(
+//         normalizarPoliticaDesarrollo
+//       );
+
+//       return {
+//         results,
+//         count: response.filterPoliticasPorArea.count,
+//       };
+//     } catch (error) {
+//       return handleError("filterByArea", error);
+//     }
+//   },
+
+//   /**
+//    * Obtiene una política de desarrollo por ID
+//    */
+//   getById: async (id: number): Promise<PoliticaDesarrollo> => {
+//     try {
+//       const response = await fetchGraphQL<{
+//         getPoliticaDesarrollo: MutationResponse<any>;
+//       }>(GET_POLITICA_DESARROLLO, { id });
+
+//       if (
+//         !response.getPoliticaDesarrollo.success ||
+//         !response.getPoliticaDesarrollo.data
+//       ) {
+//         throw new Error(
+//           response.getPoliticaDesarrollo.message ||
+//             "No se encontró la Política de Desarrollo"
+//         );
+//       }
+
+//       return normalizarPoliticaDesarrollo(response.getPoliticaDesarrollo.data);
+//     } catch (error) {
+//       return handleError("getById", error);
+//     }
+//   },
+
+//   /**
+//    * Crea una nueva política de desarrollo
+//    */
+//   create: async (
+//     data: CreatePoliticaDesarrolloInput
+//   ): Promise<PoliticaDesarrollo> => {
+//     try {
+//       const variables = {
+//         idPd: data.idPd,
+//         description: data.description,
+//         areaEstrategicaId: data.areaEstrategicaId,
+//       };
+
+//       const response = await fetchGraphQL<{
+//         createPoliticaDesarrollo: MutationResponse<any>;
+//       }>(CREATE_POLITICA_DESARROLLO, variables);
+
+//       if (
+//         !response.createPoliticaDesarrollo.success ||
+//         !response.createPoliticaDesarrollo.data
+//       ) {
+//         throw new Error(
+//           response.createPoliticaDesarrollo.message ||
+//             "No se pudo crear la Política de Desarrollo"
+//         );
+//       }
+
+//       return normalizarPoliticaDesarrollo(
+//         response.createPoliticaDesarrollo.data
+//       );
+//     } catch (error) {
+//       return handleError("create", error);
+//     }
+//   },
+
+//   /**
+//    * Actualiza una política de desarrollo existente
+//    */
+//   update: async (
+//     id: number,
+//     data: UpdatePoliticaDesarrolloInput
+//   ): Promise<PoliticaDesarrollo> => {
+//     try {
+//       const variables: Record<string, unknown> = { id };
+
+//       if (data.idPd !== undefined) variables.idPd = data.idPd;
+//       if (data.description !== undefined)
+//         variables.description = data.description;
+//       if (data.areaEstrategicaId !== undefined)
+//         variables.areaEstrategicaId = data.areaEstrategicaId;
+
+//       const response = await fetchGraphQL<{
+//         updatePoliticaDesarrollo: MutationResponse<any>;
+//       }>(UPDATE_POLITICA_DESARROLLO, variables);
+
+//       if (
+//         !response.updatePoliticaDesarrollo.success ||
+//         !response.updatePoliticaDesarrollo.data
+//       ) {
+//         throw new Error(
+//           response.updatePoliticaDesarrollo.message ||
+//             "No se pudo actualizar la Política de Desarrollo"
+//         );
+//       }
+
+//       return normalizarPoliticaDesarrollo(
+//         response.updatePoliticaDesarrollo.data
+//       );
+//     } catch (error) {
+//       return handleError("update", error);
+//     }
+//   },
+
+//   /**
+//    * Elimina una política de desarrollo
+//    */
+//   delete: async (id: number): Promise<void> => {
+//     try {
+//       const response = await fetchGraphQL<{
+//         deletePoliticaDesarrollo: MutationResponse<boolean>;
+//       }>(DELETE_POLITICA_DESARROLLO, { id });
+
+//       if (!response.deletePoliticaDesarrollo.success) {
+//         throw new Error(
+//           response.deletePoliticaDesarrollo.message ||
+//             "No se pudo eliminar la Política de Desarrollo"
+//         );
+//       }
+//     } catch (error) {
+//       return handleError("delete", error);
+//     }
+//   },
+// };
+
+// src/modules/pei/services/politicaDesarrollo.service.ts
+
 import { fetchGraphQL } from "@/shared/lib/graphql-client";
 import { createServiceErrorHandler } from "@/shared/lib/service-errors";
-import {
-  normalizeEntity,
-  normalizeRelation,
-  passthrough,
-} from "@/shared/lib/normalizers";
 import type {
   PoliticaDesarrollo,
   CreatePoliticaDesarrolloInput,
@@ -209,7 +470,6 @@ import {
   DELETE_POLITICA_DESARROLLO,
 } from "@/graphql/pei/mutations/politicaDesarrollo.mutations";
 
-// TYPES
 interface MutationResponse<T> {
   success: boolean;
   message: string;
@@ -225,30 +485,23 @@ interface PaginationParams {
   limit?: number;
   offset?: number;
 }
-// ERROR HANDLER
+
 const handleError = createServiceErrorHandler("PoliticaDesarrolloService");
 
-// NORMALIZER (usando helper reutilizable)
-const normalizarPoliticaDesarrollo = (politica: any): PoliticaDesarrollo =>
-  normalizeEntity<any, PoliticaDesarrollo>(politica, {
-    id: passthrough,
-    idPd: passthrough,
-    description: passthrough,
-    areaEstrategica: normalizeRelation, // ✅ Helper reutilizable
-  });
+const normalizarPoliticaDesarrollo = (politica: any): PoliticaDesarrollo => ({
+  id: politica.id,
+  idPd: politica.idPd,
+  description: politica.description,
+  areaEstrategica: politica.areaEstrategica || null,
+});
 
-// SERVICE
 export const PoliticaDesarrolloService = {
-  /**
-   * Lista todas las políticas de desarrollo sin filtros o con búsqueda por texto
-   */
   listAll: async (
     limit: number = 10,
     offset: number = 0,
     search?: string
   ): Promise<{ results: PoliticaDesarrollo[]; count: number }> => {
     try {
-      // Si hay búsqueda, usar searchByText
       if (search && search.trim()) {
         return PoliticaDesarrolloService.searchByText(search.trim(), {
           limit,
@@ -256,7 +509,6 @@ export const PoliticaDesarrolloService = {
         });
       }
 
-      // Sin búsqueda, listar normalmente
       const response = await fetchGraphQL<{
         listPoliticasDesarrollo: ListResponse<any>;
       }>(LIST_POLITICAS_DESARROLLO, { limit, offset });
@@ -274,9 +526,6 @@ export const PoliticaDesarrolloService = {
     }
   },
 
-  /**
-   * Busca políticas de desarrollo por texto en descripción
-   */
   searchByText: async (
     searchTerm: string,
     { limit = 10, offset = 0 }: PaginationParams = {}
@@ -303,9 +552,6 @@ export const PoliticaDesarrolloService = {
     }
   },
 
-  /**
-   * Filtra políticas por área estratégica específica
-   */
   filterByArea: async (
     areaEstrategicaId: number,
     { limit = 10, offset = 0 }: PaginationParams = {}
@@ -328,9 +574,6 @@ export const PoliticaDesarrolloService = {
     }
   },
 
-  /**
-   * Obtiene una política de desarrollo por ID
-   */
   getById: async (id: number): Promise<PoliticaDesarrollo> => {
     try {
       const response = await fetchGraphQL<{
@@ -353,9 +596,6 @@ export const PoliticaDesarrolloService = {
     }
   },
 
-  /**
-   * Crea una nueva política de desarrollo
-   */
   create: async (
     data: CreatePoliticaDesarrolloInput
   ): Promise<PoliticaDesarrollo> => {
@@ -388,9 +628,6 @@ export const PoliticaDesarrolloService = {
     }
   },
 
-  /**
-   * Actualiza una política de desarrollo existente
-   */
   update: async (
     id: number,
     data: UpdatePoliticaDesarrolloInput
@@ -426,9 +663,6 @@ export const PoliticaDesarrolloService = {
     }
   },
 
-  /**
-   * Elimina una política de desarrollo
-   */
   delete: async (id: number): Promise<void> => {
     try {
       const response = await fetchGraphQL<{

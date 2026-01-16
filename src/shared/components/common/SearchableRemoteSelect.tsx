@@ -18,7 +18,6 @@ interface Props {
 
   selectedLabel?: string;
 
-  // ✅ cargar lista al abrir
   onOpenLoad?: () => Promise<void>;
 }
 
@@ -36,19 +35,22 @@ export default function SearchableRemoteSelect({
 }: Props) {
   const [open, setOpen] = useState(false);
 
+  // Buscar label en las opciones cargadas
   const labelFromOptions = useMemo(
     () => options.find((o) => o.value === value)?.label ?? "",
     [options, value]
   );
 
-  const closedLabel = labelFromOptions || selectedLabel || "";
+  // ✅ PRIORIDAD: selectedLabel (de getByIdFn) > labelFromOptions > fallback
+  const closedLabel =
+    selectedLabel || labelFromOptions || (value ? `Cargando...` : "");
+
   const displayValue = open ? query : closedLabel;
 
   const openDropdown = async () => {
     if (disabled) return;
     setOpen(true);
 
-    // ✅ SIEMPRE intenta cargar al abrir (si te lo pasan)
     if (onOpenLoad) {
       await onOpenLoad();
     }
@@ -69,7 +71,7 @@ export default function SearchableRemoteSelect({
       <div className="relative">
         <input
           value={displayValue}
-          onChange={(e) => setQuery(e.target.value)} // ✅ deja escribir siempre
+          onChange={(e) => setQuery(e.target.value)}
           onFocus={openDropdown}
           placeholder={placeholder}
           disabled={disabled}

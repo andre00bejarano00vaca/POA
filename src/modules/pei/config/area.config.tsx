@@ -4,7 +4,7 @@ import React from "react";
 import type { ColumnConfig } from "@/shared/components/common/DynamicTable";
 import type { FieldConfig } from "@/shared/components/common/DynamicForm";
 import type { AreaEstrategica } from "@/modules/pei/types/area.types";
-import { PeiService } from "@/modules/pei/services/pei.service";
+import { PeiService } from "../services/pei.service";
 
 const extractYear = (dateString: string): string => {
   try {
@@ -73,16 +73,13 @@ export const areaFormFields: FieldConfig<any>[] = [
     placeholder: "Buscar PEI por año o texto...",
     size: "full",
 
-    // ✅ SOLUCIÓN: Búsqueda inteligente usando los métodos de PeiService
     searchFn: async ({ search, limit, offset }) => {
       const trimmedSearch = search?.trim();
 
-      // Sin búsqueda, listar todos
       if (!trimmedSearch) {
         return PeiService.listAll({ limit, offset });
       }
 
-      // Si es solo números, buscar por año
       if (/^\d{4}$/.test(trimmedSearch)) {
         return PeiService.searchByYear(parseInt(trimmedSearch), {
           limit,
@@ -90,11 +87,9 @@ export const areaFormFields: FieldConfig<any>[] = [
         });
       }
 
-      // Si es texto, buscar en observaciones
       return PeiService.searchByText(trimmedSearch, { limit, offset });
     },
 
-    // ✅ Mapeo a opciones
     mapToOption: (pei) => ({
       value: pei.id,
       label: `PEI ${extractYear(pei.anioIni)} - ${extractYear(pei.anioFin)}${
@@ -102,7 +97,21 @@ export const areaFormFields: FieldConfig<any>[] = [
       }${pei.observacion ? ` | ${pei.observacion.substring(0, 30)}...` : ""}`,
     }),
 
-    // ✅ Función para cargar el PEI completo en edición
-    getByIdFn: (id: number) => PeiService.getById(id),
+    // ✅ FIX: Retorna STRING directamente
+    getByIdFn: async (id: number | string) => {
+      try {
+        const numericId = typeof id === "string" ? parseInt(id, 10) : id;
+
+        if (isNaN(numericId) || numericId <= 0) {
+          return `PEI #${id}`;
+        }
+
+        const pei = await PeiService.getById(numericId);
+        return `PEI ${extractYear(pei.anioIni)} - ${extractYear(pei.anioFin)}`;
+      } catch (error) {
+        console.error("Error en getByIdFn:", error);
+        return `PEI #${id}`;
+      }
+    },
   },
 ];

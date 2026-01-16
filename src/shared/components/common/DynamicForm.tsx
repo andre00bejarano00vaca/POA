@@ -38,7 +38,7 @@ export interface FieldConfig<T> {
   helpText?: string;
   searchFn?: RemoteSearchFn;
   mapToOption?: (item: any) => { value: number; label: string };
-  getByIdFn?: (id: number) => Promise<any>;
+  getByIdFn?: (id: number | string) => Promise<string>;
 }
 
 interface DynamicFormProps<T> {
@@ -54,37 +54,42 @@ function RemoteSelectField<T extends Record<string, any>>({
   field,
   value,
   setValue,
-  initialLabel,
 }: {
   field: FieldConfig<T>;
   value: any;
   setValue: (v: any) => void;
-  initialLabel?: string;
 }) {
   const [selectedLabel, setSelectedLabel] = useState<string | undefined>(
-    initialLabel
+    undefined
   );
+  const [loadingLabel, setLoadingLabel] = useState(false);
 
   const remote = useRemoteOptions({
     searchFn: field.searchFn!,
     mapToOption: field.mapToOption!,
   });
 
-  // ✅ Solo carga si NO hay initialLabel (fallback)
+  // ✅ SIEMPRE carga el label usando getByIdFn cuando hay un value
   useEffect(() => {
-    if (value && !selectedLabel && field.getByIdFn && field.mapToOption) {
-      field
-        .getByIdFn(value)
-        .then((item) => {
-          const option = field.mapToOption!(item);
-          setSelectedLabel(option.label);
-        })
-        .catch((err) => {
-          console.error("Error loading initial label:", err);
-          setSelectedLabel(`ID: ${value}`);
-        });
+    if (!value || !field.getByIdFn) {
+      setSelectedLabel(undefined);
+      return;
     }
-  }, [value, selectedLabel, field]);
+
+    setLoadingLabel(true);
+    field
+      .getByIdFn(value)
+      .then((label) => {
+        setSelectedLabel(label);
+      })
+      .catch((err) => {
+        console.error("Error loading label with getByIdFn:", err);
+        setSelectedLabel(`ID: ${value}`);
+      })
+      .finally(() => {
+        setLoadingLabel(false);
+      });
+  }, [value, field]);
 
   return (
     <SearchableRemoteSelect
@@ -96,7 +101,7 @@ function RemoteSelectField<T extends Record<string, any>>({
       options={remote.options}
       query={remote.query}
       setQuery={remote.setQuery}
-      loading={remote.loading}
+      loading={remote.loading || loadingLabel}
       placeholder={field.placeholder}
       selectedLabel={selectedLabel}
       onOpenLoad={remote.loadInitial}
@@ -128,18 +133,11 @@ export function DynamicForm<T extends Record<string, any>>({
     const value = (formData[field.key] ?? "") as any;
 
     if (field.type === "remote-search-select") {
-      const labelKey = `_${String(field.key).replace(
-        /Id$/,
-        ""
-      )}Label` as keyof T;
-      const precalculatedLabel = formData[labelKey] as string | undefined;
-
       return (
         <RemoteSelectField<T>
           field={field}
           value={value}
           setValue={(v) => setValue(field.key, v)}
-          initialLabel={precalculatedLabel}
         />
       );
     }
@@ -218,12 +216,7 @@ export function DynamicForm<T extends Record<string, any>>({
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      // ✅ Filtrar campos internos (que empiezan con _) antes de enviar
-      const cleanData = Object.fromEntries(
-        Object.entries(formData).filter(([key]) => !key.startsWith("_"))
-      ) as T;
-
-      await onSubmit(cleanData);
+      await onSubmit(formData as T);
     } finally {
       setIsSubmitting(false);
     }

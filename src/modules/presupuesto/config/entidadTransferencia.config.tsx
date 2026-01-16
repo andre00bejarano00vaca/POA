@@ -7,7 +7,7 @@ import { RubroService } from "@/modules/presupuesto/services/rubro.service";
 
 export const entidadTransferenciaColumns: ColumnConfig<EntidadTransferencia>[] =
   [
-    { key: "id", header: "ID", className: "text-center w-20" },
+    // { key: "id", header: "ID", className: "text-center w-20" },
     { key: "codigo", header: "Código", className: "text-center w-32" },
     { key: "description", header: "Descripción", className: "text-left" },
     {

@@ -1,12 +1,3 @@
-// import PoliticaForm from "@/modules/pei/components/PoliticaForm";
-// import React from "react";
-
-// const page = () => {
-//   return <PoliticaForm />;
-// };
-
-// export default page;
-// src/app/(main)/(pei)/politica-desarrollo/page.tsx
 "use client";
 
 import GenericList from "@/shared/components/common/GenericList";
@@ -31,16 +22,16 @@ export default function PoliticaDesarrolloPage() {
       enableDelete
       emptyMessage="No hay políticas de desarrollo registradas."
       createButtonText="Añadir Política"
-      // ✅ mapItemToForm para transformar areaEstrategica (objeto) → areaEstrategicaId (number)
-      mapItemToForm={(item: PoliticaDesarrollo) => ({
-        // Campos normales se copian tal cual
-        id: item.id,
-        idPd: item.idPd,
-        description: item.description,
+      mapItemToForm={(item: PoliticaDesarrollo) => {
+        console.log("Debug - areaId:", item.areaEstrategica?.id); // Ver qué llega
 
-        // ✅ Transformar relación objeto → ID (getByIdFn carga el label)
-        areaEstrategicaId: item.areaEstrategica?.id,
-      })}
+        return {
+          id: item.id,
+          idPd: item.idPd,
+          description: item.description,
+          areaEstrategicaId: item.areaEstrategica?.id, // SOLO el ID
+        };
+      }}
     />
   );
 }

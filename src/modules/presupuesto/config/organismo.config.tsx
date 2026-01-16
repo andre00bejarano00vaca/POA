@@ -5,11 +5,11 @@ import { FieldConfig } from "@/shared/components/common/DynamicForm";
 import type { Organismo } from "@/modules/presupuesto/types/organismo.types";
 
 export const organismoColumns: ColumnConfig<Organismo>[] = [
-  {
-    key: "id",
-    header: "ID",
-    className: "text-center w-20",
-  },
+  // {
+  //   key: "id",
+  //   header: "ID",
+  //   className: "text-center w-20",
+  // },
   {
     key: "codigo",
     header: "Código",
