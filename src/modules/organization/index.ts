@@ -1,20 +1,18 @@
-// ============================================
-// PUBLIC API - Módulo Organization
-// ============================================
-
-// Components
-// (Agregar cuando los crees)
-// export { ... } from './components/...'
-
-// Hooks
-// (Agregar cuando los crees)
-// export { ... } from './hooks/...'
-
-// Services (exportar temporalmente hasta que tengas hooks)
-export * from "./services/direccionAdministrativa.service";
 export * from "./services/entidad.service";
-export * from "./services/UnidadEjecutora.Service";
+export * from "@/modules/organization/config/entidad.config";
+export * from "@/modules/organization/types/entidad.types";
+export * from "@/modules/organization/hooks/useEntidad";
 
-// Types
-// (Agregar cuando los crees)
-// export type * from './types/...'
+//DIRECCION ADMINISTRATIVA
+
+export * from "@/modules/organization/config/direccionAdministrativa.config";
+export * from "@/modules/organization/types/direccionAdministrativa.types";
+export * from "@/modules/organization/hooks/useDireccionAdministrativa";
+export * from "./services/direccionAdministrativa.service";
+
+//UNIDAD EJECUTORA
+
+export * from "@/modules/organization/config/unidadEjecutora.config";
+export * from "@/modules/organization/types/unidadEjecutora.types";
+export * from "@/modules/organization/hooks/useUnidadEjecutora";
+export * from "./services/unidadEjecutora.service";

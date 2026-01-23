@@ -324,12 +324,36 @@ const Sidebar = () => {
 
   const menuItems = useMemo(
     () => [
+      // {
+      //   icon: FaPeopleGroup,
+      //   text: "PERFIL",
+      //   path: "perfil",
+      //   submenu: [{ icon: BiCalendarCheck, text: "Perfil", path: "" }],
+      // },
+      {
+        icon: FaPeopleGroup,
+        text: "ORGANIZACIÓN",
+        path: "organization",
+        submenu: [
+          { icon: BiCalendarCheck, text: "Entidad", path: "entidad" },
+          {
+            icon: BiCalendarCheck,
+            text: "Direccion Administrativa",
+            path: "direccion_administrativa",
+          },
+          {
+            icon: BiCalendarCheck,
+            text: "Unidad Ejecutora",
+            path: "unidad_ejecutora",
+          },
+        ],
+      },
       {
         icon: FaPeopleGroup,
         text: "PEI",
         path: "pei",
         submenu: [
-          { icon: BiCalendarCheck, text: "Matriz PEI", path: "matriz_pei" },
+          // { icon: BiCalendarCheck, text: "Matriz PEI", path: "matriz_pei" },
           { icon: BiTask, text: "PEI", path: "" },
           { icon: BiGroup, text: "Area Estrategica", path: "area_estrategica" },
           {
@@ -362,6 +386,11 @@ const Sidebar = () => {
             text: "Programa Anual De Meta",
             path: "programa_anual_de_meta",
           },
+          {
+            icon: BiGroup,
+            text: "Seguimiento PEI",
+            path: "seguimiento_pei",
+          },
         ],
       },
       {
@@ -369,14 +398,20 @@ const Sidebar = () => {
         text: "POA",
         path: "poa",
         submenu: [
-          { icon: BiCalendarCheck, text: "Actividad", path: "actividad" },
-          { icon: BiTask, text: "Indicador POA", path: "indicador_poa" },
+          { icon: BiCalendarCheck, text: "POA", path: "" },
+          { icon: FaChalkboardUser, text: "Programa", path: "programa" },
+          {
+            icon: BiCalendarCheck,
+            text: "Acción Corto Plazo",
+            path: "accion_corto_plazo",
+          },
           {
             icon: BiGroup,
-            text: "Objetivo Institucional",
-            path: "objetivo_institucional_acp",
+            text: "Producto",
+            path: "producto",
           },
-          { icon: FaChalkboardUser, text: "Producto", path: "producto" },
+          { icon: BiCalendarCheck, text: "Actividad", path: "actividad" },
+          { icon: BiTask, text: "Indicador POA", path: "indicador_poa" },
           {
             icon: FaChalkboardUser,
             text: "Programación Trimestral Meta",
@@ -386,11 +421,6 @@ const Sidebar = () => {
             icon: FaChalkboardUser,
             text: "Siguimiento POA Trimestral",
             path: "seguimiento_poa_trimestral",
-          },
-          {
-            icon: FaChalkboardUser,
-            text: "Programa POA",
-            path: "programa_Poa",
           },
           {
             icon: FaChalkboardUser,
@@ -422,7 +452,7 @@ const Sidebar = () => {
         ],
       },
     ],
-    []
+    [],
   );
 
   const toggleSubmenu = (title: string) => {
@@ -430,7 +460,7 @@ const Sidebar = () => {
       setExpandedItems((prev) =>
         prev.includes(title)
           ? prev.filter((x) => x !== title)
-          : [...prev, title]
+          : [...prev, title],
       );
     }
   };

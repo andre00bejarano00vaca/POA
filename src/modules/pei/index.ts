@@ -48,3 +48,9 @@ export {
   indicadorPeiFormFields,
 } from "./config/indicadorPei.config";
 export { IndicadorPeiService } from "./services/indicadorPei.service";
+
+// Matriz PEI
+export * from "./hooks/useMatrizPei";
+export * from "./types/matrizPei.types";
+export * from "./config/matrizPei.config";
+export * from "./services/matrizPei.service";

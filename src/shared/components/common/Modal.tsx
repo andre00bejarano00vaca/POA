@@ -1,82 +1,187 @@
-// src/components/common/Modal.tsx
+// // src/components/common/Modal.tsx
+// "use client";
+
+// import React, { useEffect } from "react";
+// import { XMarkIcon } from "@heroicons/react/24/outline";
+
+// interface ModalProps {
+//   isOpen: boolean;
+//   onClose: () => void;
+//   title: string;
+//   children: React.ReactNode;
+//   size?: "sm" | "md" | "lg" | "xl" | "2xl";
+// }
+
+// const Modal: React.FC<ModalProps> = ({
+//   isOpen,
+//   onClose,
+//   title,
+//   children,
+//   size = "lg",
+// }) => {
+//   useEffect(() => {
+//     if (isOpen) {
+//       document.body.style.overflow = "hidden";
+//     } else {
+//       document.body.style.overflow = "unset";
+//     }
+//     return () => {
+//       document.body.style.overflow = "unset";
+//     };
+//   }, [isOpen]);
+
+//   if (!isOpen) return null;
+
+//   const sizeClasses = {
+//     sm: "max-w-md",
+//     md: "max-w-lg",
+//     lg: "max-w-2xl",
+//     xl: "max-w-4xl",
+//     "2xl": "max-w-6xl",
+//   };
+
+//   return (
+//     <div className="fixed inset-0 z-50 overflow-y-auto">
+//       {/* Overlay - Sin blur, solo transparencia */}
+//       <div
+//         className="fixed inset-0 bg-gray-900/40 transition-opacity"
+//         onClick={onClose}
+//         aria-hidden="true"
+//       />
+
+//       {/* Modal Container */}
+//       <div className="flex min-h-full items-center justify-center p-4">
+//         <div
+//           className={`relative transform overflow-hidden rounded-xl bg-white shadow-2xl transition-all w-full ${sizeClasses[size]}`}
+//           onClick={(e) => e.stopPropagation()}
+//         >
+//           {/* Header */}
+//           <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+//             <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
+//             <button
+//               onClick={onClose}
+//               className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+//               aria-label="Cerrar modal"
+//             >
+//               <XMarkIcon className="w-6 h-6" />
+//             </button>
+//           </div>
+
+//           {/* Content */}
+//           <div className="px-6 py-4">{children}</div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Modal;
+
 "use client";
 
-import React, { useEffect } from 'react';
-import { XMarkIcon } from '@heroicons/react/24/outline';
+import { useEffect, useRef } from "react";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
   children: React.ReactNode;
-  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+  size?: "sm" | "md" | "lg" | "xl" | "2xl";
 }
 
-const Modal: React.FC<ModalProps> = ({
+export default function Modal({
   isOpen,
   onClose,
   title,
   children,
-  size = 'lg'
-}) => {
+  size = "lg",
+}: ModalProps) {
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // Cerrar con ESC
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isOpen, onClose]);
+
+  // Prevenir scroll del body cuando el modal está abierto
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
+
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, [isOpen]);
 
   if (!isOpen) return null;
 
   const sizeClasses = {
-    sm: 'max-w-md',
-    md: 'max-w-lg',
-    lg: 'max-w-2xl',
-    xl: 'max-w-4xl',
-    '2xl': 'max-w-6xl'
+    sm: "max-w-md",
+    md: "max-w-lg",
+    lg: "max-w-2xl",
+    xl: "max-w-4xl",
+    "2xl": "max-w-6xl",
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      {/* Overlay - Sin blur, solo transparencia */}
-      <div 
-        className="fixed inset-0 bg-gray-900/40 transition-opacity" 
+    <div
+      className="fixed inset-0 z-[9998] overflow-y-auto"
+      aria-labelledby="modal-title"
+      role="dialog"
+      aria-modal="true"
+    >
+      {/* Backdrop */}
+      {/* <div className="fixed inset-0 bg-transparent"  */}
+      <div
+        className="fixed inset-0 bg-gray-900/40 transition-opacity"
         onClick={onClose}
-        aria-hidden="true"
-      />
-      
+      ></div>
+
       {/* Modal Container */}
       <div className="flex min-h-full items-center justify-center p-4">
-        <div 
-          className={`relative transform overflow-hidden rounded-xl bg-white shadow-2xl transition-all w-full ${sizeClasses[size]}`}
+        <div
+          ref={modalRef}
+          className={`
+            relative w-full ${sizeClasses[size]}
+            transform overflow-hidden rounded-xl bg-white
+            shadow-2xl transition-all
+            flex flex-col
+          `}
+          style={{
+            maxHeight: "calc(100vh - 4rem)", // Dejar espacio arriba y abajo
+          }}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-            <h3 className="text-xl font-semibold text-gray-900">
+          {/* Header - fijo arriba */}
+          <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4 bg-gray-50">
+            <h3 className="text-xl font-bold text-gray-900" id="modal-title">
               {title}
             </h3>
             <button
+              type="button"
               onClick={onClose}
-              className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+              className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-200 hover:text-gray-600 transition-colors"
               aria-label="Cerrar modal"
             >
-              <XMarkIcon className="w-6 h-6" />
+              <XMarkIcon className="h-6 w-6" />
             </button>
           </div>
 
-          {/* Content */}
-          <div className="px-6 py-4">
-            {children}
-          </div>
+          {/* Content - con scroll */}
+          <div className="flex-1 overflow-y-auto px-6 py-6">{children}</div>
         </div>
       </div>
     </div>
   );
-};
-
-export default Modal;
+}

@@ -35,7 +35,6 @@ const Header = () => {
     }
   }, []);
 
-  
   return (
     <header className="h-16 border-b border-gray-200 px-6 flex items-center justify-end bg-white shadow-sm">
       <nav className="flex items-center gap-2">
@@ -71,7 +70,8 @@ const Header = () => {
                     <span className="text-xs text-gray-500">Hoy</span>
                   </div>
                   <p className="text-gray-500 text-xs">
-                    {user?.nombre || user?.username || "Alguien"} ha comentado tu publicación.
+                    {user?.nombre || user?.username || "Alguien"} ha comentado
+                    tu publicación.
                   </p>
                 </div>
               </Link>
@@ -93,7 +93,9 @@ const Header = () => {
           menuButton={
             <MenuButton className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded-lg transition-colors">
               <span className="font-bold text-gray-700">
-                {user?.nombre?.split(" ")[0]?.toUpperCase() || user?.username?.toUpperCase() || "USUARIO"}
+                {user?.nombre?.split(" ")[0]?.toUpperCase() ||
+                  user?.username?.toUpperCase() ||
+                  "USUARIO"}
               </span>
               <FaAngleDown className="text-gray-600" />
             </MenuButton>
@@ -106,7 +108,7 @@ const Header = () => {
           <MenuItem className="p-0 hover:bg-transparent">
             <Link
               className="rounded-lg transition-colors hover:bg-gray-50 flex items-center gap-4 py-2 px-4 w-full"
-              href="/perfil"
+              href="/dashboard/perfil"
             >
               <div className="flex flex-col gap-1 text-sm">
                 <span className="font-semibold text-gray-700">
