@@ -1,11 +1,17 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+
 import { IoNotifications } from "react-icons/io5";
 import { FaAngleDown } from "react-icons/fa";
 import { IoMdSettings } from "react-icons/io";
 import { RiLogoutCircleRLine, RiChat1Fill } from "react-icons/ri";
 import { Menu, MenuItem, MenuButton } from "@szhsin/react-menu";
+
+import { logoutUser } from "@/shared/lib/auth.service";
 
 interface User {
   username: string;
@@ -19,8 +25,12 @@ interface User {
 
 const Header = () => {
   const [user, setUser] = useState<User | null>(null);
+  const [loggingOut, setLoggingOut] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     const storage = localStorage.getItem("auth-storage");
     if (storage) {
       try {
@@ -34,6 +44,17 @@ const Header = () => {
       }
     }
   }, []);
+
+  const handleLogout = async () => {
+    if (loggingOut) return;
+    setLoggingOut(true);
+
+    try {
+      await logoutUser(); // logout server + limpieza localStorage (tu service ya lo hace)
+    } finally {
+      router.replace("/login"); // directo a login, sin página intermedia
+    }
+  };
 
   return (
     <header className="h-16 border-b border-gray-200 px-6 flex items-center justify-end bg-white shadow-sm">
@@ -57,6 +78,7 @@ const Header = () => {
             Notificaciones (3)
           </h1>
           <hr className="mb-4 border-gray-200" />
+
           {[1, 2, 3].map((item) => (
             <MenuItem key={item} className="p-0 hover:bg-transparent">
               <Link
@@ -77,7 +99,9 @@ const Header = () => {
               </Link>
             </MenuItem>
           ))}
+
           <hr className="my-4 border-gray-200" />
+
           <MenuItem className="p-0 hover:bg-transparent flex justify-center">
             <Link
               href="/"
@@ -133,14 +157,19 @@ const Header = () => {
             </Link>
           </MenuItem>
 
+          {/* Cerrar sesión usando tu service (sin página /logout) */}
           <MenuItem className="p-0 hover:bg-transparent">
-            <Link
-              className="rounded-lg transition-colors hover:bg-red-50 flex items-center gap-4 py-2 px-4 w-full"
-              href="/logout"
+            <button
+              type="button"
+              onClick={handleLogout}
+              disabled={loggingOut}
+              className="rounded-lg transition-colors hover:bg-red-50 flex items-center gap-4 py-2 px-4 w-full disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <RiLogoutCircleRLine className="text-red-600" />
-              <span className="text-red-600 font-semibold">Cerrar Sesión</span>
-            </Link>
+              <span className="text-red-600 font-semibold">
+                {loggingOut ? "Saliendo..." : "Cerrar Sesión"}
+              </span>
+            </button>
           </MenuItem>
         </Menu>
       </nav>

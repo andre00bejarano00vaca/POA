@@ -1,28 +1,106 @@
+// import {
+//   getAccessToken,
+//   getRefreshToken,
+//   refreshAccessToken,
+//   logout,
+// } from "@/shared/lib/auth.service";
+
+// import { print, type DocumentNode } from "graphql";
+
+// /**
+//  * Este es el motor central de tu aplicación.
+//  * Todos los servicios que hemos creado (Recaudación, PEI, etc.)
+//  * utilizarán esta función para hablar con el servidor.
+//  */
+// export async function fetchGraphQL<
+//   TResponse,
+//   TVariables extends Record<string, any> = Record<string, any>
+// >(query: string | DocumentNode, variables?: TVariables): Promise<TResponse> {
+//   const API_URL =
+//     process.env.NEXT_PUBLIC_PLANNING_URL || "http://localhost:8003/planning/";
+
+//   // ✅ Convertir DocumentNode -> string (si viene de un .graphql importado)
+//   const queryString = typeof query === "string" ? query : print(query);
+
+//   // Función helper para hacer petición
+//   const makeRequest = async (token: string | null): Promise<Response> => {
+//     return fetch(API_URL, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: token ? `JWT ${token}` : "",
+//       },
+//       body: JSON.stringify({ query: queryString, variables: variables ?? {} }),
+//     });
+//   };
+
+//   let token = getAccessToken();
+//   let response = await makeRequest(token);
+
+//   if (response.status === 401) {
+//     const refreshToken = getRefreshToken();
+
+//     if (!refreshToken) {
+//       logout();
+//       if (typeof window !== "undefined") {
+//         window.location.href = "/login";
+//       }
+//       throw new Error("Sesion expirada. Inicie sesión nuevamente.");
+//     }
+
+//     try {
+//       // Intentar obtener un nuevo access token
+//       const newAccessToken = await refreshAccessToken(refreshToken);
+
+//       // Guardar el nuevo token
+//       if (typeof window !== "undefined") {
+//         localStorage.setItem("accessToken", newAccessToken);
+//       }
+
+//       // Reintentar la petición con el nuevo token
+//       response = await makeRequest(newAccessToken);
+//     } catch {
+//       // Si falla el refresh, hacer logout
+//       logout();
+//       if (typeof window !== "undefined") {
+//         window.location.href = "/login";
+//       }
+//       throw new Error("Failed to refresh authentication. Please login again.");
+//     }
+//   }
+
+//   const { data, errors } = await response.json();
+
+//   if (errors) {
+//     console.error("Error en GraphQL:", errors);
+//     throw new Error(errors[0].message || "Error en la consulta");
+//   }
+
+//   return data as TResponse;
+// }
+
 import {
   getAccessToken,
-  getRefreshToken,
   refreshAccessToken,
   logout,
 } from "@/shared/lib/auth.service";
-
 import { print, type DocumentNode } from "graphql";
 
-/**
- * Este es el motor central de tu aplicación.
- * Todos los servicios que hemos creado (Recaudación, PEI, etc.)
- * utilizarán esta función para hablar con el servidor.
- */
+type GraphQLErrorItem = { message?: string };
+type GraphQLResponse<T> = {
+  data?: T;
+  errors?: GraphQLErrorItem[];
+};
+
 export async function fetchGraphQL<
   TResponse,
-  TVariables extends Record<string, any> = Record<string, any>
+  TVariables extends Record<string, any> = Record<string, any>,
 >(query: string | DocumentNode, variables?: TVariables): Promise<TResponse> {
   const API_URL =
     process.env.NEXT_PUBLIC_PLANNING_URL || "http://localhost:8003/planning/";
 
-  // ✅ Convertir DocumentNode -> string (si viene de un .graphql importado)
   const queryString = typeof query === "string" ? query : print(query);
 
-  // Función helper para hacer petición
   const makeRequest = async (token: string | null): Promise<Response> => {
     return fetch(API_URL, {
       method: "POST",
@@ -37,44 +115,70 @@ export async function fetchGraphQL<
   let token = getAccessToken();
   let response = await makeRequest(token);
 
-  if (response.status === 401) {
-    const refreshToken = getRefreshToken();
+  let responseData: GraphQLResponse<TResponse>;
+  try {
+    responseData = (await response.json()) as GraphQLResponse<TResponse>;
+  } catch {
+    throw new Error("Error de red o respuesta inválida del servidor.");
+  }
 
-    if (!refreshToken) {
+  const firstMsg = responseData.errors?.[0]?.message ?? "";
+
+  const isTokenExpired =
+    response.status === 401 ||
+    firstMsg.includes("Signature has expired") ||
+    firstMsg.includes("Token inválido");
+
+  if (isTokenExpired) {
+    const currentToken = getAccessToken();
+
+    if (!currentToken) {
       logout();
-      if (typeof window !== "undefined") {
-        window.location.href = "/login";
-      }
-      throw new Error("Sesion expirada. Inicie sesión nuevamente.");
+      if (typeof window !== "undefined") window.location.href = "/login";
+      throw new Error("Sesión expirada. Inicie sesión nuevamente.");
     }
 
     try {
-      // Intentar obtener un nuevo access token
-      const newAccessToken = await refreshAccessToken(refreshToken);
+      const newAccessToken = await refreshAccessToken(currentToken);
 
-      // Guardar el nuevo token
       if (typeof window !== "undefined") {
         localStorage.setItem("accessToken", newAccessToken);
       }
 
-      // Reintentar la petición con el nuevo token
-      response = await makeRequest(newAccessToken);
-    } catch {
-      // Si falla el refresh, hacer logout
-      logout();
-      if (typeof window !== "undefined") {
-        window.location.href = "/login";
+      const retryResponse = await makeRequest(newAccessToken);
+
+      let retryData: GraphQLResponse<TResponse>;
+      try {
+        retryData = (await retryResponse.json()) as GraphQLResponse<TResponse>;
+      } catch {
+        throw new Error("Error de red o respuesta inválida del servidor.");
       }
-      throw new Error("Failed to refresh authentication. Please login again.");
+
+      if (retryData.errors?.length) {
+        throw new Error(retryData.errors[0]?.message || "Error en la consulta");
+      }
+
+      if (!retryData.data) {
+        throw new Error("Respuesta GraphQL sin data.");
+      }
+
+      return retryData.data;
+    } catch {
+      logout();
+      if (typeof window !== "undefined") window.location.href = "/login";
+      throw new Error(
+        "Error al refrescar autenticación. Inicie sesión nuevamente.",
+      );
     }
   }
 
-  const { data, errors } = await response.json();
-
-  if (errors) {
-    console.error("Error en GraphQL:", errors);
-    throw new Error(errors[0].message || "Error en la consulta");
+  if (responseData.errors?.length) {
+    throw new Error(responseData.errors[0]?.message || "Error en la consulta");
   }
 
-  return data as TResponse;
+  if (!responseData.data) {
+    throw new Error("Respuesta GraphQL sin data.");
+  }
+
+  return responseData.data;
 }
