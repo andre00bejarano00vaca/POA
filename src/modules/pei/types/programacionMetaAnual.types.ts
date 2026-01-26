@@ -1,29 +1,25 @@
-// src/modules/programacion/types/programacionMetaAnual.types.ts
+// src/modules/pei/types/programacionMetaAnual.types.ts
 
-import type { IndicadorPei } from "@/modules/pei/types/indicadorPei.types";
-import type { PEI } from "@/modules/pei/types/pei.types";
+import type { IndicadorPei } from "./indicadorPei.types";
+
+export interface Pei {
+  id: number;
+  anioIni: number;
+  anioFin: number;
+  ejecucion: boolean;
+  metaTotal: number;
+  observacion: string | null;
+}
 
 export interface ProgramacionMetaAnual {
   id: number;
   anio: number;
   programado: number;
-  ejecutado: number;
-  idIndicadorPeiImp: IndicadorPei | null;
-  peiIdPei: PEI | null;
+  idIndicadorPeiImp: IndicadorPei;
+  peiIdPei: Pei;
 }
 
-export interface CreateProgramacionMetaAnualInput {
-  anio: number;
-  programado: number;
-  ejecutado: number;
-  idIndicadorPeiImpId: number;
-  peiIdPeiId: number;
-}
-
+// Solo UPDATE porque no tienes CREATE
 export interface UpdateProgramacionMetaAnualInput {
-  anio?: number;
-  programado?: number;
-  ejecutado?: number;
-  idIndicadorPeiImpId?: number;
-  peiIdPeiId?: number;
+  programado: number; // Solo esto según tu mutation
 }

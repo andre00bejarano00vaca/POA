@@ -2,13 +2,8 @@
 
 import { fetchGraphQL } from "@/shared/lib/graphql-client";
 import { createServiceErrorHandler } from "@/shared/lib/service-errors";
-import type {
-  SeguimientoPeiIndicador,
-  CreateSeguimientoPeiIndicadorInput,
-  UpdateSeguimientoPeiIndicadorInput,
-} from "../types/seguimientoPei.types";
+import type { SeguimientoPeiIndicador } from "../types/seguimientoPei.types";
 
-// Importar queries y mutations
 import {
   LIST_SEGUIMIENTOS_PEI_INDICADORES,
   GET_SEGUIMIENTO_PEI_INDICADOR,
@@ -18,11 +13,7 @@ import {
   FILTER_INDICADORES_POR_OBJETIVO,
 } from "@/graphql/pei/queries/seguimientoPeiIndicador.queries";
 
-import {
-  CREATE_SEGUIMIENTO_PEI_INDICADOR,
-  UPDATE_SEGUIMIENTO_PEI_INDICADOR,
-  DELETE_SEGUIMIENTO_PEI_INDICADOR,
-} from "@/graphql/pei/mutations/seguimientoPeiIndicador.mutations";
+import { ACTUALIZAR_EJECUTADO_SEGUIMIENTO_INDICADOR } from "@/graphql/pei/mutations/seguimientoPeiIndicador.mutations";
 
 interface MutationResponse<T> {
   success: boolean;
@@ -42,32 +33,201 @@ interface PaginationParams {
 
 const handleError = createServiceErrorHandler("SeguimientoPeiIndicadorService");
 
-// ===== NORMALIZADOR =====
+/**
+ * ✅ NORMALIZACIÓN COMPLETA coherente con ACTUALIZAR_EJECUTADO_SEGUIMIENTO_INDICADOR
+ */
 const normalizarSeguimientoPeiIndicador = (
   indicador: any,
 ): SeguimientoPeiIndicador => ({
   id: indicador.id,
-  programado: indicador.programado,
-  ejecutado: indicador.ejecutado,
-  grado_cumplimiento: indicador.gradoComplimiento,
-  escala_valoracion: indicador.escalaValoracion,
-  comentarios: indicador.comentarios || "",
-  seguimiento_pei_objetivo_id_spo: indicador.seguimientoPeiObjetivo?.id || 0,
-  progra_anual_meta_id_pam: indicador.procesoAnualMeta?.id || 0,
-  seguimiento_pei_objetivo: indicador.seguimientoPeiObjetivo,
-  programa_anual_meta: indicador.procesoAnualMeta
+  programado: indicador.programado ?? 0,
+  ejecutado: indicador.ejecutado ?? 0,
+  grado_cumplimiento: indicador.gradoComplimiento ?? 0,
+  escala_valoracion: indicador.escalaValoracion ?? "BAJA",
+  comentarios: indicador.comentarios ?? "",
+
+  // IDs para compatibilidad
+  seguimiento_pei_objetivo_id_spo: indicador.seguimientoPeiObjetivo?.id ?? 0,
+  progra_anual_meta_id_pam: indicador.metaAnual?.id ?? 0,
+
+  // ✅ Objeto seguimiento_pei_objetivo completo (camelCase → snake_case)
+  seguimiento_pei_objetivo: indicador.seguimientoPeiObjetivo
     ? {
-        id: indicador.procesoAnualMeta.id,
-        anio: indicador.procesoAnualMeta.anio,
-        programado: indicador.procesoAnualMeta.programado,
-        ejecutado: indicador.procesoAnualMeta.ejecutado,
-        idIndicadorPeiImp: indicador.procesoAnualMeta.idIndicadorPeiImp,
+        id: indicador.seguimientoPeiObjetivo.id,
+        promedio_cumplimiento:
+          indicador.seguimientoPeiObjetivo.promedioCumplimiento ?? 0,
+        escala_valoracion:
+          indicador.seguimientoPeiObjetivo.escalaValoracion ?? "BAJA",
+        valoracion_cualitativa:
+          indicador.seguimientoPeiObjetivo.valoracionCualitativa ?? "",
+        objetivo_estrategico_id: 0, // No viene en la respuesta
+        seguimiento_pei_id:
+          indicador.seguimientoPeiObjetivo.seguimientoPei?.id ?? 0,
+        objetivo_estrategico: undefined, // No viene en la respuesta
+
+        // ✅ Seguimiento PEI anidado (camelCase → snake_case)
+        seguimiento_pei: indicador.seguimientoPeiObjetivo.seguimientoPei
+          ? {
+              id: indicador.seguimientoPeiObjetivo.seguimientoPei.id,
+              ano: indicador.seguimientoPeiObjetivo.seguimientoPei.anio ?? 0,
+              promedio_general:
+                indicador.seguimientoPeiObjetivo.seguimientoPei
+                  .promediaGeneral ?? 0,
+              valoracion_global:
+                indicador.seguimientoPeiObjetivo.seguimientoPei
+                  .valoracionGlobal ?? "",
+              observaciones:
+                indicador.seguimientoPeiObjetivo.seguimientoPei.observaciones ??
+                "",
+              porc_alta:
+                indicador.seguimientoPeiObjetivo.seguimientoPei.porcAlta ?? 0,
+              porc_media:
+                indicador.seguimientoPeiObjetivo.seguimientoPei.porcMedia ?? 0,
+              porc_baja:
+                indicador.seguimientoPeiObjetivo.seguimientoPei.porcBaja ?? 0,
+              fecha_registro:
+                indicador.seguimientoPeiObjetivo.seguimientoPei.fechaRegistro ??
+                "",
+              pei_id:
+                indicador.seguimientoPeiObjetivo.seguimientoPei.pei?.id ?? 0,
+              pei: indicador.seguimientoPeiObjetivo.seguimientoPei.pei
+                ? {
+                    id: indicador.seguimientoPeiObjetivo.seguimientoPei.pei.id,
+                    anioIni:
+                      indicador.seguimientoPeiObjetivo.seguimientoPei.pei
+                        .anioIni,
+                    anioFin:
+                      indicador.seguimientoPeiObjetivo.seguimientoPei.pei
+                        .anioFin,
+                    metaTotal:
+                      indicador.seguimientoPeiObjetivo.seguimientoPei.pei
+                        .metaTotal ?? 0,
+                    ejecucion:
+                      indicador.seguimientoPeiObjetivo.seguimientoPei.pei
+                        .ejecucion ?? 0,
+                    observacion:
+                      indicador.seguimientoPeiObjetivo.seguimientoPei.pei
+                        .observacion ?? "",
+                  }
+                : undefined,
+            }
+          : undefined,
+      }
+    : undefined,
+
+  // ✅ Objeto programa_anual_meta completo (camelCase → snake_case)
+  programa_anual_meta: indicador.metaAnual
+    ? {
+        id: indicador.metaAnual.id,
+        anio: indicador.metaAnual.anio ?? 0,
+        programado: indicador.metaAnual.programado ?? 0,
+        ejecutado: indicador.metaAnual.ejecutado ?? 0,
+        id_indicador_pei_imp_id: indicador.metaAnual.idIndicadorPeiImp?.id ?? 0,
+        pei_id_pei_id: indicador.metaAnual.peiIdPei?.id ?? 0,
+
+        // ✅ Indicador PEI anidado
+        idIndicadorPeiImp: indicador.metaAnual.idIndicadorPeiImp
+          ? {
+              id: indicador.metaAnual.idIndicadorPeiImp.id,
+              description:
+                indicador.metaAnual.idIndicadorPeiImp.description ?? "",
+              unidadMedida:
+                indicador.metaAnual.idIndicadorPeiImp.unidadMedida ?? "",
+              formula: indicador.metaAnual.idIndicadorPeiImp.formula ?? "",
+              lineaBase: indicador.metaAnual.idIndicadorPeiImp.lineaBase ?? 0,
+              meta: indicador.metaAnual.idIndicadorPeiImp.meta ?? 0,
+
+              // ✅ Objetivo Estratégico anidado
+              objetivoEstrategico: indicador.metaAnual.idIndicadorPeiImp
+                .objetivoEstrategico
+                ? {
+                    id: indicador.metaAnual.idIndicadorPeiImp
+                      .objetivoEstrategico.id,
+                    idOe:
+                      indicador.metaAnual.idIndicadorPeiImp.objetivoEstrategico
+                        .idOe ?? 0,
+                    description:
+                      indicador.metaAnual.idIndicadorPeiImp.objetivoEstrategico
+                        .description ?? "",
+
+                    // Política de Desarrollo anidada
+                    politicaDesarrollo: indicador.metaAnual.idIndicadorPeiImp
+                      .objetivoEstrategico.politicaDesarrollo
+                      ? {
+                          id: indicador.metaAnual.idIndicadorPeiImp
+                            .objetivoEstrategico.politicaDesarrollo.id,
+                          idPd:
+                            indicador.metaAnual.idIndicadorPeiImp
+                              .objetivoEstrategico.politicaDesarrollo.idPd ?? 0,
+                          description:
+                            indicador.metaAnual.idIndicadorPeiImp
+                              .objetivoEstrategico.politicaDesarrollo
+                              .description ?? "",
+
+                          // Área Estratégica anidada
+                          areaEstrategica: indicador.metaAnual.idIndicadorPeiImp
+                            .objetivoEstrategico.politicaDesarrollo
+                            .areaEstrategica
+                            ? {
+                                id: indicador.metaAnual.idIndicadorPeiImp
+                                  .objetivoEstrategico.politicaDesarrollo
+                                  .areaEstrategica.id,
+                                description:
+                                  indicador.metaAnual.idIndicadorPeiImp
+                                    .objetivoEstrategico.politicaDesarrollo
+                                    .areaEstrategica.description ?? "",
+
+                                // PEI anidado
+                                pei: indicador.metaAnual.idIndicadorPeiImp
+                                  .objetivoEstrategico.politicaDesarrollo
+                                  .areaEstrategica.pei
+                                  ? {
+                                      id: indicador.metaAnual.idIndicadorPeiImp
+                                        .objetivoEstrategico.politicaDesarrollo
+                                        .areaEstrategica.pei.id,
+                                      anioIni:
+                                        indicador.metaAnual.idIndicadorPeiImp
+                                          .objetivoEstrategico
+                                          .politicaDesarrollo.areaEstrategica
+                                          .pei.anioIni,
+                                      anioFin:
+                                        indicador.metaAnual.idIndicadorPeiImp
+                                          .objetivoEstrategico
+                                          .politicaDesarrollo.areaEstrategica
+                                          .pei.anioFin,
+                                      metaTotal:
+                                        indicador.metaAnual.idIndicadorPeiImp
+                                          .objetivoEstrategico
+                                          .politicaDesarrollo.areaEstrategica
+                                          .pei.metaTotal ?? 0,
+                                      ejecucion:
+                                        indicador.metaAnual.idIndicadorPeiImp
+                                          .objetivoEstrategico
+                                          .politicaDesarrollo.areaEstrategica
+                                          .pei.ejecucion ?? 0,
+                                      observacion:
+                                        indicador.metaAnual.idIndicadorPeiImp
+                                          .objetivoEstrategico
+                                          .politicaDesarrollo.areaEstrategica
+                                          .pei.observacion ?? "",
+                                    }
+                                  : undefined,
+                              }
+                            : undefined,
+                        }
+                      : undefined,
+                  }
+                : undefined,
+            }
+          : undefined,
       }
     : undefined,
 });
 
-// ===== SERVICE =====
 export const SeguimientoPeiIndicadorService = {
+  /**
+   * ✅ Lista todos los indicadores de seguimiento
+   */
   listAll: async ({ limit = 10, offset = 0 }: PaginationParams = {}): Promise<{
     results: SeguimientoPeiIndicador[];
     count: number;
@@ -90,11 +250,13 @@ export const SeguimientoPeiIndicadorService = {
     }
   },
 
+  /**
+   * ✅ Obtiene indicadores por objetivo
+   */
   getByObjetivoId: async (
     objetivoId: number,
   ): Promise<SeguimientoPeiIndicador[]> => {
     try {
-      // Intentar usar la query específica de filtro si está disponible
       const response = await fetchGraphQL<{
         filterIndicadoresPorObjetivo: ListResponse<any>;
       }>(FILTER_INDICADORES_POR_OBJETIVO, {
@@ -107,7 +269,7 @@ export const SeguimientoPeiIndicadorService = {
         normalizarSeguimientoPeiIndicador,
       );
     } catch (error) {
-      // Fallback: obtener todos los indicadores y filtrar manualmente
+      // Fallback: obtener todos y filtrar
       try {
         const allResponse = await fetchGraphQL<{
           listSeguimientosPeiIndicadores: ListResponse<any>;
@@ -118,7 +280,6 @@ export const SeguimientoPeiIndicadorService = {
             normalizarSeguimientoPeiIndicador,
           );
 
-        // Filtrar por seguimiento_pei_objetivo_id_spo
         return allIndicadores.filter(
           (ind) => ind.seguimiento_pei_objetivo_id_spo === objetivoId,
         );
@@ -128,6 +289,9 @@ export const SeguimientoPeiIndicadorService = {
     }
   },
 
+  /**
+   * ✅ Obtiene un indicador por ID
+   */
   getById: async (id: number): Promise<SeguimientoPeiIndicador> => {
     try {
       const response = await fetchGraphQL<{
@@ -152,100 +316,59 @@ export const SeguimientoPeiIndicadorService = {
     }
   },
 
-  create: async (
-    data: CreateSeguimientoPeiIndicadorInput,
+  /**
+   * ✅ MÉTODO PRINCIPAL: Actualizar ejecutado
+   *
+   * Esta es la ÚNICA mutación disponible para SeguimientoPeiIndicador.
+   *
+   * Utiliza el método `actualizar_ejecutado()` del modelo Django, que:
+   * - Calcula automáticamente grado_cumplimiento
+   * - Determina escala_valoracion (ALTA/MEDIA/BAJA)
+   * - Recalcula valores del objetivo padre
+   * - Recalcula valores del seguimiento PEI completo
+   *
+   * @param id - ID del SeguimientoPEIIndicador
+   * @param ejecutado - Valor ejecutado
+   * @param comentarios - Comentarios opcionales
+   * @returns SeguimientoPeiIndicador actualizado con toda la estructura anidada
+   */
+  actualizarEjecutado: async (
+    id: number,
+    ejecutado: number,
+    comentarios?: string,
   ): Promise<SeguimientoPeiIndicador> => {
     try {
       const variables = {
-        ejecutado: data.ejecutado,
-        escalaValoracion: data.escala_valoracion,
-        gradoComplimiento: data.grado_cumplimiento,
-        procesoAnualMetaId: data.progra_anual_meta_id_pam,
-        programado: data.programado,
-        seguimientoPeiObjetivoId: data.seguimiento_pei_objetivo_id_spo,
-        comentarios: data.comentarios,
+        seguimientoPeiIndicadorId: id,
+        ejecutado: ejecutado,
+        comentarios: comentarios || null,
       };
 
       const response = await fetchGraphQL<{
-        createSeguimientoPeiIndicador: MutationResponse<any>;
-      }>(CREATE_SEGUIMIENTO_PEI_INDICADOR, variables);
+        actualizarEjecutadoSeguimientoIndicador: MutationResponse<any>;
+      }>(ACTUALIZAR_EJECUTADO_SEGUIMIENTO_INDICADOR, variables);
 
       if (
-        !response.createSeguimientoPeiIndicador.success ||
-        !response.createSeguimientoPeiIndicador.data
+        !response.actualizarEjecutadoSeguimientoIndicador.success ||
+        !response.actualizarEjecutadoSeguimientoIndicador.data
       ) {
         throw new Error(
-          response.createSeguimientoPeiIndicador.message ||
-            "No se pudo crear el indicador",
+          response.actualizarEjecutadoSeguimientoIndicador.message ||
+            "No se pudo actualizar el ejecutado",
         );
       }
 
       return normalizarSeguimientoPeiIndicador(
-        response.createSeguimientoPeiIndicador.data,
+        response.actualizarEjecutadoSeguimientoIndicador.data,
       );
     } catch (error) {
-      return handleError("create", error);
+      return handleError("actualizarEjecutado", error);
     }
   },
 
-  update: async (
-    id: number,
-    data: UpdateSeguimientoPeiIndicadorInput,
-  ): Promise<SeguimientoPeiIndicador> => {
-    try {
-      const variables: Record<string, unknown> = { id };
-
-      if (data.programado !== undefined) variables.programado = data.programado;
-      if (data.ejecutado !== undefined) variables.ejecutado = data.ejecutado;
-      if (data.grado_cumplimiento !== undefined)
-        variables.gradoComplimiento = data.grado_cumplimiento;
-      if (data.escala_valoracion !== undefined)
-        variables.escalaValoracion = data.escala_valoracion;
-      if (data.comentarios !== undefined)
-        variables.comentarios = data.comentarios;
-      if (data.progra_anual_meta_id_pam !== undefined)
-        variables.procesoAnualMetaId = data.progra_anual_meta_id_pam;
-
-      const response = await fetchGraphQL<{
-        updateSeguimientoPeiIndicador: MutationResponse<any>;
-      }>(UPDATE_SEGUIMIENTO_PEI_INDICADOR, variables);
-
-      if (
-        !response.updateSeguimientoPeiIndicador.success ||
-        !response.updateSeguimientoPeiIndicador.data
-      ) {
-        throw new Error(
-          response.updateSeguimientoPeiIndicador.message ||
-            "No se pudo actualizar el indicador",
-        );
-      }
-
-      return normalizarSeguimientoPeiIndicador(
-        response.updateSeguimientoPeiIndicador.data,
-      );
-    } catch (error) {
-      return handleError("update", error);
-    }
-  },
-
-  delete: async (id: number): Promise<void> => {
-    try {
-      const response = await fetchGraphQL<{
-        deleteSeguimientoPeiIndicador: MutationResponse<boolean>;
-      }>(DELETE_SEGUIMIENTO_PEI_INDICADOR, { id });
-
-      if (!response.deleteSeguimientoPeiIndicador.success) {
-        throw new Error(
-          response.deleteSeguimientoPeiIndicador.message ||
-            "No se pudo eliminar el indicador",
-        );
-      }
-    } catch (error) {
-      return handleError("delete", error);
-    }
-  },
-
-  // ===== MÉTODOS ADICIONALES =====
+  /**
+   * ✅ Cuenta total de indicadores
+   */
   count: async (): Promise<number> => {
     try {
       const response = await fetchGraphQL<{
@@ -258,6 +381,9 @@ export const SeguimientoPeiIndicadorService = {
     }
   },
 
+  /**
+   * ✅ Verifica si existe un indicador
+   */
   exists: async (id: number): Promise<boolean> => {
     try {
       const response = await fetchGraphQL<{
@@ -270,6 +396,9 @@ export const SeguimientoPeiIndicadorService = {
     }
   },
 
+  /**
+   * ✅ Obtiene indicadores ordenados
+   */
   getOrdenados: async (
     orderBy: string,
     { limit = 10, offset = 0 }: PaginationParams = {},

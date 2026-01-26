@@ -1,124 +1,74 @@
-// src/modules/programacion/config/programacionMetaAnual.config.tsx
+// src/modules/pei/config/programacionMetaAnual.config.tsx
 
 import { ColumnConfig } from "@/shared/components/common/DynamicTable";
 import { FieldConfig } from "@/shared/components/common/DynamicForm";
 import type { ProgramacionMetaAnual } from "../types/programacionMetaAnual.types";
-import { IndicadorPeiService } from "@/modules/pei/services/indicadorPei.service";
-import { PeiService } from "@/modules/pei/services/pei.service";
+import { IndicadorPeiService } from "../services/indicadorPei.service";
 
-// ======================================================
-// COLUMNAS
-// ======================================================
 export const programacionMetaAnualColumns: ColumnConfig<ProgramacionMetaAnual>[] =
   [
-    {
-      key: "anio",
-      header: "Año",
-      className: "text-center w-20",
-    },
-    {
-      key: "idIndicadorPeiImp",
-      header: "Indicador",
-      className: "text-left max-w-md",
-      render: (item) => (
-        <div className="whitespace-normal break-words">
-          {item.idIndicadorPeiImp?.description ?? "Sin indicador"}
-        </div>
-      ),
-    },
+    { key: "id", header: "ID", className: "text-center w-20" },
+    { key: "anio", header: "Año", className: "text-center w-24" },
     {
       key: "programado",
       header: "Programado",
-      className: "text-center w-24",
-      render: (item) => (
-        <span className="font-semibold text-blue-600">{item.programado}</span>
-      ),
-    },
-    {
-      key: "ejecutado",
-      header: "Ejecutado",
-      className: "text-center w-24",
-      render: (item) => (
-        <span className="font-semibold text-green-600">{item.ejecutado}</span>
-      ),
-    },
-    {
-      key: "ejecutado", // key válida
-      header: "% Cumplimiento",
       className: "text-center w-32",
-      render: (item) => {
-        const porcentaje =
-          item.programado > 0
-            ? ((item.ejecutado / item.programado) * 100).toFixed(1)
-            : "0.0";
-
-        const color =
-          parseFloat(porcentaje) >= 100
-            ? "text-green-600"
-            : parseFloat(porcentaje) >= 75
-              ? "text-yellow-600"
-              : "text-red-600";
-
-        return <span className={`font-bold ${color}`}>{porcentaje}%</span>;
-      },
+      render: (item) =>
+        `${item.programado} ${item.idIndicadorPeiImp?.unidadMedida || ""}`,
+    },
+    {
+      key: "idIndicadorPeiImp",
+      header: "Indicador PEI",
+      className: "text-left",
+      render: (item) => item.idIndicadorPeiImp?.description || "Sin indicador",
+    },
+    {
+      key: "peiIdPei",
+      header: "Período PEI",
+      className: "text-center w-32",
+      render: (item) =>
+        item.peiIdPei
+          ? `${item.peiIdPei.anioIni} - ${item.peiIdPei.anioFin}`
+          : "Sin PEI",
     },
   ];
 
-// ======================================================
-// FORMULARIO
-// ======================================================
 export const programacionMetaAnualFormFields: FieldConfig<any>[] = [
   {
     key: "anio",
     label: "Año",
     type: "number",
     required: true,
-    min: 2000,
-    max: 2100,
+    min: 2020,
+    max: 2050,
     step: 1,
-    placeholder: "Ingrese el año",
+    placeholder: "2024",
   },
   {
     key: "programado",
-    label: "Meta Programada",
+    label: "Valor Programado",
     type: "number",
     required: true,
     min: 0,
-    step: 1,
-    placeholder: "Ingrese la meta programada",
+    step: 0.01,
+    placeholder: "Valor a alcanzar en el año",
   },
   {
-    key: "ejecutado",
-    label: "Meta Ejecutada",
-    type: "number",
-    required: true,
-    min: 0,
-    step: 1,
-    placeholder: "Ingrese la meta ejecutada",
-  },
-
-  // ==================================================
-  // INDICADOR PEI (SERVICE NUMÉRICO)
-  // ==================================================
-  {
-    key: "idIndicadorPeiImpId",
+    key: "indicadorPeiId",
     label: "Indicador PEI",
     type: "remote-search-select",
     required: true,
-    placeholder: "Buscar indicador...",
+    size: "full",
+    placeholder: "Buscar indicador PEI...",
 
     searchFn: async ({ search, limit, offset }) => {
-      const l = limit ?? 10;
-      const o = offset ?? 0;
-
       if (search && search.trim()) {
         return IndicadorPeiService.searchByText(search.trim(), {
-          limit: l,
-          offset: o,
+          limit,
+          offset,
         });
       }
-
-      return IndicadorPeiService.listAll(l, o);
+      return IndicadorPeiService.listAll(limit, offset);
     },
 
     mapToOption: (indicador) => ({
@@ -126,54 +76,17 @@ export const programacionMetaAnualFormFields: FieldConfig<any>[] = [
       label: indicador.description?.trim() || `Indicador #${indicador.id}`,
     }),
 
-    getByIdFn: async (id: number | string) => {
-      const numericId = typeof id === "string" ? parseInt(id, 10) : id;
-      if (isNaN(numericId) || numericId <= 0) {
-        return `Indicador #${id}`;
-      }
-
-      const indicador = await IndicadorPeiService.getById(numericId);
-      return indicador.description?.trim() || `Indicador #${numericId}`;
-    },
+    // getByIdFn: async (id: number) => {
+    //   const indicador = await IndicadorPeiService.getById(id);
+    //   return indicador.description?.trim() || `Indicador #${indicador.id}`;
+    // },
   },
-
-  // ==================================================
-  // PEI (SERVICE OBJETO)
-  // ==================================================
   {
-    key: "peiIdPeiId",
-    label: "PEI",
-    type: "remote-search-select",
+    key: "peiId",
+    label: "PEI (Plan Estratégico)",
+    type: "number",
     required: true,
-    placeholder: "Buscar PEI...",
-
-    searchFn: async ({ search, limit, offset }) => {
-      const l = limit ?? 10;
-      const o = offset ?? 0;
-
-      if (search && search.trim()) {
-        return PeiService.searchByText(search.trim(), {
-          limit: l,
-          offset: o,
-        });
-      }
-
-      return PeiService.listAll({ limit: l, offset: o });
-    },
-
-    mapToOption: (pei) => ({
-      value: pei.id,
-      label: `PEI ${pei.anioIni} - ${pei.anioFin}`,
-    }),
-
-    getByIdFn: async (id: number | string) => {
-      const numericId = typeof id === "string" ? parseInt(id, 10) : id;
-      if (isNaN(numericId) || numericId <= 0) {
-        return `PEI #${id}`;
-      }
-
-      const pei = await PeiService.getById(numericId);
-      return `PEI ${pei.anioIni} - ${pei.anioFin}`;
-    },
+    placeholder: "ID del PEI",
+    helpText: "Ingrese el ID del Plan Estratégico Institucional",
   },
 ];

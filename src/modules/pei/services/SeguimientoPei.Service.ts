@@ -300,7 +300,6 @@ import type {
   UpdateSeguimientoPeiInput,
 } from "../types/seguimientoPei.types";
 
-// Importar queries y mutations
 import {
   LIST_SEGUIMIENTOS_PEI,
   GET_SEGUIMIENTO_PEI,
@@ -315,6 +314,7 @@ import {
   CREATE_SEGUIMIENTO_PEI,
   UPDATE_SEGUIMIENTO_PEI,
   DELETE_SEGUIMIENTO_PEI,
+  SYNC_SEGUIMIENTO_PEI,
 } from "@/graphql/pei/mutations/seguimientoPei.mutations";
 
 interface MutationResponse<T> {
@@ -335,7 +335,6 @@ interface PaginationParams {
 
 const handleError = createServiceErrorHandler("SeguimientoPeiService");
 
-// ===== FUNCIÓN HELPER PARA FORMATEAR FECHAS =====
 /**
  * Convierte cualquier formato de fecha a YYYY-MM-DD para GraphQL
  */
@@ -346,11 +345,9 @@ const formatearFechaParaGraphQL = (fecha?: string | Date): string => {
   if (fecha instanceof Date) {
     return fecha.toISOString().split("T")[0];
   }
-  // Si es string, extraer solo la parte de fecha
   return fecha.split("T")[0];
 };
 
-// ===== NORMALIZADOR =====
 const normalizarSeguimientoPei = (seguimiento: any): SeguimientoPei => ({
   id: seguimiento.id,
   ano: seguimiento.anio,
@@ -365,7 +362,6 @@ const normalizarSeguimientoPei = (seguimiento: any): SeguimientoPei => ({
   pei: seguimiento.pei || null,
 });
 
-// ===== SERVICE =====
 export const SeguimientoPeiService = {
   listAll: async ({ limit = 10, offset = 0 }: PaginationParams = {}): Promise<{
     results: SeguimientoPei[];
@@ -421,7 +417,7 @@ export const SeguimientoPeiService = {
         porcMedia: data.porc_media,
         promediaGeneral: data.promedio_general,
         valoracionGlobal: data.valoracion_global,
-        fechaRegistro: formatearFechaParaGraphQL(data.fecha_registro), // ✅ CORREGIDO
+        fechaRegistro: formatearFechaParaGraphQL(data.fecha_registro),
         observaciones: data.observaciones,
       };
 
@@ -464,7 +460,7 @@ export const SeguimientoPeiService = {
       if (data.fecha_registro !== undefined)
         variables.fechaRegistro = formatearFechaParaGraphQL(
           data.fecha_registro,
-        ); // ✅ CORREGIDO
+        );
       if (data.observaciones !== undefined)
         variables.observaciones = data.observaciones;
 
@@ -505,7 +501,29 @@ export const SeguimientoPeiService = {
     }
   },
 
-  // ===== MÉTODOS ADICIONALES =====
+  // ✅ NUEVO: Sincronizar/Recalcular seguimiento
+  sync: async (seguimientoPeiId: number): Promise<SeguimientoPei> => {
+    try {
+      const response = await fetchGraphQL<{
+        syncSeguimientoPei: MutationResponse<any>;
+      }>(SYNC_SEGUIMIENTO_PEI, { seguimientoPeiId });
+
+      if (
+        !response.syncSeguimientoPei.success ||
+        !response.syncSeguimientoPei.data
+      ) {
+        throw new Error(
+          response.syncSeguimientoPei.message ||
+            "No se pudo sincronizar el Seguimiento PEI",
+        );
+      }
+
+      return normalizarSeguimientoPei(response.syncSeguimientoPei.data);
+    } catch (error) {
+      return handleError("sync", error);
+    }
+  },
+
   count: async (): Promise<number> => {
     try {
       const response = await fetchGraphQL<{

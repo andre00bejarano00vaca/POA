@@ -1,56 +1,61 @@
 // src/modules/pei/index.ts
 
-export { usePei } from "./hooks/usePei";
-export { useArea } from "./hooks/useArea";
-export { usePoliticaDesarrollo } from "./hooks/usePoliticaDesarrollo";
-export { useObjetivoEstrategico } from "./hooks/useObjetivoEstrategico";
-export { useAccionEstrategica } from "./hooks/useAccionEstrategica";
+// PEI
+export * from "./hooks/usePei";
+export * from "./config/pei.config";
+export * from "./types/pei.types";
+export * from "./services/pei.service";
 
-export type * from "./types/pei.types";
-export type * from "./types/area.types";
-export type * from "./types/politicaDesarrollo.types";
-export type * from "./types/objetivoEstrategico.types";
-export type * from "./types/accionEstrategica.types";
+// Área Estratégica
+export * from "./hooks/useArea";
+export * from "./types/area.types";
+export * from "./config/area.config";
+export * from "./services/areaEstrategica.service";
 
-export { peiColumns, peiFormFields } from "./config/pei.config";
-export { areaColumns, areaFormFields } from "./config/area.config";
-export {
-  politicaDesarrolloColumns,
-  politicaDesarrolloFormFields,
-} from "./config/politicaDesarrollo.config";
-export {
-  objetivoEstrategicoColumns,
-  objetivoEstrategicoFormFields,
-} from "./config/objetivoEstrategico.config";
-export {
-  accionEstrategicaColumns,
-  accionEstrategicaFormFields,
-} from "./config/accionEstrategica.config";
+// Política de Desarrollo
+export * from "./hooks/usePoliticaDesarrollo";
+export * from "./services/politicaDesarrollo.service";
+export * from "./config/politicaDesarrollo.config";
+export * from "./types/politicaDesarrollo.types";
 
-export { PeiService } from "./services/pei.service";
-export { AreaService } from "./services/areaEstrategica.service";
-export { PoliticaDesarrolloService } from "./services/politicaDesarrollo.service";
-export { ObjetivoEstrategicoService } from "./services/objetivoEstrategico.service";
-export { AccionEstrategicaService } from "./services/accionEstrategica.service";
+// Objetivo Estratégico
+export * from "./types/objetivoEstrategico.types";
+export * from "./config/objetivoEstrategico.config";
+export * from "./hooks/useObjetivoEstrategico";
+export * from "./services/objetivoEstrategico.service";
 
-export { useProductoInstitucional } from "./hooks/useProductoInstitucional";
-export type * from "./types/productoInstitucional.types";
-export {
-  productoInstitucionalColumns,
-  productoInstitucionalFormFields,
-} from "./config/productoInstitucional.config";
-export { ProductoInstitucionalService } from "./services/productoInstitucional.service";
+// Acción Estratégica
+export * from "./config/accionEstrategica.config";
+export * from "./services/accionEstrategica.service";
+export * from "./types/accionEstrategica.types";
+export * from "./hooks/useAccionEstrategica";
 
-export { useIndicadorPei } from "./hooks/useIndicadorPei";
-export type * from "./types/indicadorPei.types";
-export {
-  indicadorPeiColumns,
-  indicadorPeiFormFields,
-} from "./config/indicadorPei.config";
-export { IndicadorPeiService } from "./services/indicadorPei.service";
+// Producto Institucional
+export * from "./hooks/useProductoInstitucional";
+export * from "./types/productoInstitucional.types";
+export * from "./config/productoInstitucional.config";
+export * from "./services/productoInstitucional.service";
+
+// Indicador PEI
+export * from "./hooks/useIndicadorPei";
+export * from "./types/indicadorPei.types";
+export * from "./config/indicadorPei.config";
+export * from "./services/indicadorPei.service";
+
+// Programación Meta Anual
+export * from "./hooks/useProgramacionMetaAnual";
+export * from "./types/programacionMetaAnual.types";
+export * from "./config/programacionMetaAnual.config";
+export * from "./services/programacionMetaAnual.service";
 
 // Matriz PEI
 export * from "./hooks/useMatrizPei";
 export * from "./types/matrizPei.types";
 export * from "./config/matrizPei.config";
 export * from "./services/matrizPei.service";
+
+// Seguimiento PEI
+export * from "./hooks/useSeguimientoPei";
+export * from "./types/seguimientoPei.types";
+export * from "./config/seguimientoPei.config";
+export * from "./services/seguimientoPei.service";

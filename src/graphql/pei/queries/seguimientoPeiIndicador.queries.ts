@@ -1,4 +1,4 @@
-// src/graphql/seguimiento/queries/seguimientoPeiIndicador.queries.ts
+// src/graphql/pei/queries/seguimientoPeiIndicador.queries.ts
 
 export const LIST_SEGUIMIENTOS_PEI_INDICADORES = `
   query ListSeguimientosPeiIndicadores($limit: Int, $offset: Int) {
@@ -11,10 +11,9 @@ export const LIST_SEGUIMIENTOS_PEI_INDICADORES = `
         escalaValoracion
         gradoComplimiento
         programado
-        procesoAnualMeta {
+        metaAnual {
           id
           anio
-          ejecutado
           programado
           idIndicadorPeiImp {
             id
@@ -27,32 +26,7 @@ export const LIST_SEGUIMIENTOS_PEI_INDICADORES = `
               id
               description
               idOe
-              politicaDesarrollo {
-                id
-                description
-                idPd
-                areaEstrategica {
-                  id
-                  description
-                  pei {
-                    id
-                    anioFin
-                    anioIni
-                    ejecucion
-                    metaTotal
-                    observacion
-                  }
-                }
-              }
             }
-          }
-          peiIdPei {
-            id
-            anioFin
-            anioIni
-            ejecucion
-            metaTotal
-            observacion
           }
         }
         seguimientoPeiObjetivo {
@@ -64,42 +38,6 @@ export const LIST_SEGUIMIENTOS_PEI_INDICADORES = `
             id
             description
             idOe
-            politicaDesarrollo {
-              id
-              description
-              idPd
-              areaEstrategica {
-                id
-                description
-                pei {
-                  id
-                  anioFin
-                  anioIni
-                  ejecucion
-                  metaTotal
-                  observacion
-                }
-              }
-            }
-          }
-          seguimientoPei {
-            id
-            anio
-            fechaRegistro
-            observaciones
-            porcAlta
-            porcBaja
-            porcMedia
-            promediaGeneral
-            valoracionGlobal
-            pei {
-              id
-              anioFin
-              anioIni
-              ejecucion
-              metaTotal
-              observacion
-            }
           }
         }
       }
@@ -116,51 +54,25 @@ export const GET_SEGUIMIENTO_PEI_INDICADOR = `
         id
         comentarios
         ejecutado
-        gradoComplimiento
         escalaValoracion
+        gradoComplimiento
         programado
-        procesoAnualMeta {
+        metaAnual {
           id
           anio
-          ejecutado
           programado
           idIndicadorPeiImp {
             id
             description
             formula
+            lineaBase
             meta
             unidadMedida
-            lineaBase
             objetivoEstrategico {
               id
               description
               idOe
-              politicaDesarrollo {
-                id
-                description
-                idPd
-                areaEstrategica {
-                  id
-                  description
-                  pei {
-                    id
-                    anioFin
-                    anioIni
-                    ejecucion
-                    metaTotal
-                    observacion
-                  }
-                }
-              }
             }
-          }
-          peiIdPei {
-            id
-            anioFin
-            anioIni
-            ejecucion
-            metaTotal
-            observacion
           }
         }
         seguimientoPeiObjetivo {
@@ -172,42 +84,6 @@ export const GET_SEGUIMIENTO_PEI_INDICADOR = `
             id
             description
             idOe
-            politicaDesarrollo {
-              id
-              description
-              idPd
-              areaEstrategica {
-                id
-                description
-                pei {
-                  id
-                  anioFin
-                  anioIni
-                  ejecucion
-                  metaTotal
-                  observacion
-                }
-              }
-            }
-          }
-          seguimientoPei {
-            id
-            anio
-            fechaRegistro
-            observaciones
-            porcAlta
-            porcBaja
-            porcMedia
-            promediaGeneral
-            valoracionGlobal
-            pei {
-              id
-              anioFin
-              anioIni
-              ejecucion
-              metaTotal
-              observacion
-            }
           }
         }
       }
@@ -216,98 +92,29 @@ export const GET_SEGUIMIENTO_PEI_INDICADOR = `
 `;
 
 export const GET_SEGUIMIENTOS_PEI_INDICADORES_ORDENADOS = `
-  query GetSeguimientosPeiIndicadoresOrdenados($limit: Int, $offset: Int, $orderBy: String!) {
-    getSeguimientosPeiIndicadoresOrdenados(limit: $limit, offset: $offset, orderBy: $orderBy) {
+  query GetSeguimientosPeiIndicadoresOrdenados($orderBy: String!, $limit: Int, $offset: Int) {
+    getSeguimientosPeiIndicadoresOrdenados(orderBy: $orderBy, limit: $limit, offset: $offset) {
       count
       results {
         id
-        ejecutado
         comentarios
+        ejecutado
         escalaValoracion
         gradoComplimiento
         programado
-        seguimientoPeiObjetivo {
-          id
-          escalaValoracion
-          promedioCumplimiento
-          valoracionCualitativa
-          objetivoEstrategico {
-            id
-            description
-            idOe
-            politicaDesarrollo {
-              id
-              description
-              idPd
-              areaEstrategica {
-                id
-                description
-                pei {
-                  id
-                  anioFin
-                  anioIni
-                  ejecucion
-                  metaTotal
-                  observacion
-                }
-              }
-            }
-          }
-          seguimientoPei {
-            id
-            anio
-            fechaRegistro
-            observaciones
-            porcAlta
-            porcBaja
-            porcMedia
-            promediaGeneral
-            valoracionGlobal
-            pei {
-              id
-              anioFin
-              anioIni
-              ejecucion
-              metaTotal
-              observacion
-            }
-          }
-        }
-        procesoAnualMeta {
+        metaAnual {
           id
           anio
-          ejecutado
           programado
           idIndicadorPeiImp {
             id
             description
-            formula
-            lineaBase
-            meta
             unidadMedida
-            objetivoEstrategico {
-              id
-              description
-              idOe
-              politicaDesarrollo {
-                id
-                idPd
-                description
-                areaEstrategica {
-                  id
-                  description
-                  pei {
-                    id
-                    anioFin
-                    anioIni
-                    ejecucion
-                    metaTotal
-                    observacion
-                  }
-                }
-              }
-            }
           }
+        }
+        seguimientoPeiObjetivo {
+          id
+          promedioCumplimiento
         }
       }
     }
@@ -328,7 +135,7 @@ export const EXISTS_SEGUIMIENTO_PEI_INDICADOR = `
 
 export const FILTER_INDICADORES_POR_OBJETIVO = `
   query FilterIndicadoresPorObjetivo($objetivoId: Int!, $limit: Int, $offset: Int) {
-    filterIndicadoresPorObjetivo(objetivoId: $objetivoId, limit: $limit, offset: $offset) {
+    filterIndicadoresPorObjetivo(objetivoEstrategicoId: $objetivoId, limit: $limit, offset: $offset) {
       count
       results {
         id
@@ -337,17 +144,22 @@ export const FILTER_INDICADORES_POR_OBJETIVO = `
         escalaValoracion
         gradoComplimiento
         programado
-        procesoAnualMeta {
+        metaAnual {
           id
           anio
-          ejecutado
           programado
           idIndicadorPeiImp {
             id
             description
             formula
+            lineaBase
             meta
             unidadMedida
+            objetivoEstrategico {
+              id
+              description
+              idOe
+            }
           }
         }
         seguimientoPeiObjetivo {
@@ -355,6 +167,11 @@ export const FILTER_INDICADORES_POR_OBJETIVO = `
           escalaValoracion
           promedioCumplimiento
           valoracionCualitativa
+          objetivoEstrategico {
+            id
+            description
+            idOe
+          }
         }
       }
     }
