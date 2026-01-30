@@ -20,3 +20,5 @@ export interface UpdatePoaInput {
   fechaRegistro?: string;
   unidadEjecutoraId?: number;
 }
+
+export type POA = Poa;

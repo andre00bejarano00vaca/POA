@@ -15,7 +15,7 @@ export function normalizeRelation<T>(relation: T | null | undefined): T | null {
  * Si el campo existe y es un array, lo retorna tal cual
  */
 export function normalizeRelationArray<T>(
-  relation: T[] | null | undefined
+  relation: T[] | null | undefined,
 ): T[] {
   return Array.isArray(relation) ? relation : [];
 }
@@ -37,7 +37,7 @@ export function normalizeEntity<TRaw, TResult>(
   raw: TRaw,
   schema: {
     [K in keyof TResult]: (value: any) => TResult[K];
-  }
+  },
 ): TResult {
   const result = {} as TResult;
 

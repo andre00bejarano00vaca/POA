@@ -97,7 +97,7 @@ export async function fetchGraphQL<
   TVariables extends Record<string, any> = Record<string, any>,
 >(query: string | DocumentNode, variables?: TVariables): Promise<TResponse> {
   const API_URL =
-    process.env.NEXT_PUBLIC_PLANNING_URL || "http://localhost:8003/planning/";
+    process.env.NEXT_PUBLIC_PLANNING_URL || "http://localhost:8004/planning/";
 
   const queryString = typeof query === "string" ? query : print(query);
 

@@ -1,113 +1,71 @@
-// src/modules/poa/config/programacionTrimestralMeta.config.tsx
+// src/modules/poa/config/programacionTrimestral.config.tsx
 
 import { ColumnConfig } from "@/shared/components/common/DynamicTable";
 import { FieldConfig } from "@/shared/components/common/DynamicForm";
-import type { ProgramacionTrimestralMeta } from "../types/programacionTrimestralMeta.types";
+import type { ProgramacionTrimestral } from "../types/programacionTrimestralMeta.types";
 import { IndicadorPoaService } from "../services/indicadorPoa.service";
 
-const getTrimesterName = (trimestre: number): string => {
-  const nombres = ["", "Primer", "Segundo", "Tercer", "Cuarto"];
-  return `${nombres[trimestre]} Trimestre`;
-};
-
-export const programacionTrimestralMetaColumns: ColumnConfig<ProgramacionTrimestralMeta>[] =
+export const programacionTrimestralColumns: ColumnConfig<ProgramacionTrimestral>[] =
   [
+    { key: "id", header: "ID", className: "text-center w-20" },
     {
       key: "trimestre",
       header: "Trimestre",
-      className: "text-center w-32",
-      render: (item) => (
-        <span className="font-semibold">
-          {getTrimesterName(item.trimestre)}
-        </span>
-      ),
+      className: "text-center w-24",
+      render: (item) => `T${item.trimestre}`,
     },
     {
       key: "programado",
       header: "Programado",
-      className: "text-center w-24",
-      render: (item) => (
-        <span className="font-semibold text-blue-600">{item.programado}</span>
-      ),
-    },
-    {
-      key: "ejecutado",
-      header: "Ejecutado",
-      className: "text-center w-24",
-      render: (item) => (
-        <span className="font-semibold text-green-600">{item.ejecutado}</span>
-      ),
-    },
-    {
-      key: "ejecutado", // ✅ key real del tipo
-      header: "% Cumplimiento",
       className: "text-center w-32",
-      render: (item) => {
-        const porcentaje =
-          item.programado > 0
-            ? ((item.ejecutado / item.programado) * 100).toFixed(1)
-            : "0.0";
-
-        const p = parseFloat(porcentaje);
-        const color =
-          p >= 100
-            ? "text-green-600"
-            : p >= 75
-              ? "text-yellow-600"
-              : "text-red-600";
-
-        return <span className={`font-bold ${color}`}>{porcentaje}%</span>;
-      },
+      render: (item) =>
+        `${item.programado} ${item.indicadorPoa?.unidadMedida || ""}`,
     },
     {
       key: "indicadorPoa",
-      header: "Indicador",
-      className: "text-left max-w-md",
-      render: (item) => (
-        <div className="text-sm text-gray-600 truncate">
-          {item.indicadorPoa?.description ?? "-"}
-        </div>
-      ),
+      header: "Indicador POA",
+      className: "text-left",
+      render: (item) => item.indicadorPoa?.description || "Sin indicador",
+    },
+    {
+      key: "indicadorPoa",
+      header: "Actividad",
+      className: "text-left",
+      render: (item) =>
+        item.indicadorPoa?.actividad?.description || "Sin actividad",
     },
   ];
 
-export const programacionTrimestralMetaFormFields: FieldConfig<any>[] = [
+export const programacionTrimestralFormFields: FieldConfig<any>[] = [
   {
     key: "trimestre",
     label: "Trimestre",
     type: "select",
     required: true,
+    placeholder: "Seleccione el trimestre",
     options: [
-      { value: 1, label: "Primer Trimestre" },
-      { value: 2, label: "Segundo Trimestre" },
-      { value: 3, label: "Tercer Trimestre" },
-      { value: 4, label: "Cuarto Trimestre" },
+      { value: 1, label: "Trimestre 1" },
+      { value: 2, label: "Trimestre 2" },
+      { value: 3, label: "Trimestre 3" },
+      { value: 4, label: "Trimestre 4" },
     ],
   },
   {
     key: "programado",
-    label: "Meta Programada",
+    label: "Valor Programado",
     type: "number",
     required: true,
     min: 0,
-    step: 1,
-    placeholder: "Ingrese la meta programada",
-  },
-  {
-    key: "ejecutado",
-    label: "Meta Ejecutada",
-    type: "number",
-    required: true,
-    min: 0,
-    step: 1,
-    placeholder: "Ingrese la meta ejecutada",
+    step: 0.01,
+    placeholder: "Valor a alcanzar en el trimestre",
   },
   {
     key: "indicadorPoaId",
     label: "Indicador POA",
     type: "remote-search-select",
     required: true,
-    placeholder: "Buscar indicador...",
+    size: "full",
+    placeholder: "Buscar indicador POA...",
 
     searchFn: async ({ search, limit, offset }) => {
       if (search && search.trim()) {
@@ -121,23 +79,7 @@ export const programacionTrimestralMetaFormFields: FieldConfig<any>[] = [
 
     mapToOption: (indicador) => ({
       value: indicador.id,
-      label: `${indicador.description} - ${indicador.unidadMedida}`,
+      label: indicador.description?.trim() || `Indicador #${indicador.id}`,
     }),
-
-    getByIdFn: async (id: number | string) => {
-      try {
-        const numericId = typeof id === "string" ? parseInt(id, 10) : id;
-
-        if (isNaN(numericId) || numericId <= 0) {
-          return `Indicador #${id}`;
-        }
-
-        const indicador = await IndicadorPoaService.getById(numericId);
-        return `${indicador.description} - ${indicador.unidadMedida}`;
-      } catch (error) {
-        console.error("Error en getByIdFn:", error);
-        return `Indicador #${id}`;
-      }
-    },
   },
 ];

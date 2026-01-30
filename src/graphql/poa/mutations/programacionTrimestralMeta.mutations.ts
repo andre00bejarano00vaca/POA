@@ -1,135 +1,52 @@
-// src/graphql/poa/mutations/programacionTrimestralMeta.mutations.ts
-
-export const CREATE_PROGRAMACION_TRIMESTRAL_META_POA = `
-  mutation CreateProgramacionTrimestralMetaPoa(
-    $trimestre: Int!
-    $programado: Int!
-    $ejecutado: Int!
-    $indicadorPoaId: Int!
-  ) {
-    createProgramacionTrimestralMetaPoa(
-      trimestre: $trimestre
-      programado: $programado
-      ejecutado: $ejecutado
-      indicadorPoaId: $indicadorPoaId
-    ) {
-      success
-      message
-      data {
-        id
-        trimestre
-        programado
-        ejecutado
-        indicadorPoa {
-          id
-          description
-          formula
-          lineaBase
-          meta
-          unidadMedida
-          actividad {
-            id
-            description
-            tipo
-            clase
-            categProgramatica
-            fechaIni
-            fechaFinal
-            docVerif
-            causasDesv
-            accionCortoPlazo {
-              id
-              description
-              programa {
-                id
-                description
-                poa {
-                  id
-                  anio
-                  fechaRegistro
-                  unidadEjecutora {
-                    id
-                    description
-                    techoPres
-                    direccionAdministrativa {
-                      id
-                      description
-                      entidad {
-                        id
-                        codigo
-                        sigla
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`;
+// src/graphql/poa/mutations/programacionTrimestral.mutations.ts
 
 export const UPDATE_PROGRAMACION_TRIMESTRAL_META_POA = `
-  mutation UpdateProgramacionTrimestralMetaPoa(
-    $id: Int!
-    $trimestre: Int
-    $programado: Int
-    $ejecutado: Int
-    $indicadorPoaId: Int
-  ) {
-    updateProgramacionTrimestralMetaPoa(
-      id: $id
-      trimestre: $trimestre
-      programado: $programado
-      ejecutado: $ejecutado
-      indicadorPoaId: $indicadorPoaId
-    ) {
+  mutation UpdateProgramacionTrimestralMetaPoa($id: Int!, $programado: Int!) {
+    updateProgramacionTrimestralMetaPoa(id: $id, programado: $programado) {
       success
       message
       data {
         id
-        trimestre
         programado
-        ejecutado
+        trimestre
         indicadorPoa {
-          id
           description
           formula
+          id
           lineaBase
           meta
           unidadMedida
           actividad {
-            id
-            description
-            tipo
-            clase
             categProgramatica
+            causasDesv
+            tipo
+            id
             fechaIni
             fechaFinal
             docVerif
-            causasDesv
+            description
+            clase
             accionCortoPlazo {
-              id
               description
+              id
               programa {
-                id
                 description
+                id
                 poa {
-                  id
                   anio
                   fechaRegistro
+                  id
                   unidadEjecutora {
-                    id
                     description
+                    id
                     techoPres
                     direccionAdministrativa {
-                      id
                       description
+                      id
                       entidad {
-                        id
+                        activo
                         codigo
+                        id
                         sigla
                       }
                     }
@@ -147,9 +64,9 @@ export const UPDATE_PROGRAMACION_TRIMESTRAL_META_POA = `
 export const DELETE_PROGRAMACION_TRIMESTRAL_META_POA = `
   mutation DeleteProgramacionTrimestralMetaPoa($id: Int!) {
     deleteProgramacionTrimestralMetaPoa(id: $id) {
-      success
-      message
       data
+      message
+      success
     }
   }
 `;
