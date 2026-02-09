@@ -809,7 +809,7 @@ export default function SeguimientoPeiDetalle({
 
       showAlert({
         type: "success",
-        title: "✅ Actualización exitosa",
+        title: "Actualización exitosa",
         message:
           "El ejecutado ha sido actualizado y todos los valores han sido recalculados automáticamente",
         confirmText: "Aceptar",
