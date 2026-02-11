@@ -98,7 +98,7 @@ export async function fetchGraphQL<
 >(query: string | DocumentNode, variables?: TVariables): Promise<TResponse> {
   const API_URL =
     // process.env.NEXT_PUBLIC_PLANNING_URL || "http://localhost:8004/planning/";
-    process.env.NEXT_PUBLIC_PLANNING_URL || "https://172.21.2.20/admin-planning/";
+    process.env.NEXT_PUBLIC_PLANNING_URL || "https://172.21.2.20/planning/";
 
   const queryString = typeof query === "string" ? query : print(query);
 
